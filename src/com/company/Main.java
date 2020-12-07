@@ -11,5 +11,6 @@ public class Main {
 //        frame.setVisible(true);
 //        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Admin admin = new Admin();
+        System.out.println("*****");
     }
 }

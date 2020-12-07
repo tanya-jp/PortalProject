@@ -29,6 +29,11 @@ public class CMainPanel extends JPanel {
         add(tabbedPane, BorderLayout.CENTER);
     }
 
+    public JTextArea makeTextPanel()
+    {
+        return createTextPanel();
+    }
+
     public void addNewTab() {
         JTextArea textPanel = createTextPanel();
         if(tabbedPane.getTabCount() == 0)
@@ -43,11 +48,16 @@ public class CMainPanel extends JPanel {
         }
     }
 
-    public void addSpecificTab(String str)
+    public void addSpecificTab(String name, String text)
     {
         JTextArea textPanel = createTextPanel();
-        textPanel.setText("Write Something here...");
-        tabbedPane.addTab(str,textPanel);
+        textPanel.setText(text);
+        tabbedPane.addTab(name,textPanel);
+    }
+
+    public void addMeal(JFrame frame)
+    {
+        tabbedPane.addTab("Meal",frame);
     }
 
     private JTextArea createTextPanel() {

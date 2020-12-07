@@ -39,7 +39,7 @@ public class CFrame extends JFrame implements ActionListener{
 
 
         newItem = new JMenuItem("New");
-        userPass = new JMenuItem("Chane username or password");
+        userPass = new JMenuItem("Change username or password");
         saveItem = new JMenuItem("Save");
         exitItem = new JMenuItem("Exit");
 
@@ -51,22 +51,28 @@ public class CFrame extends JFrame implements ActionListener{
         newItem.addActionListener(this);
         saveItem.addActionListener(this);
         exitItem.addActionListener(this);
+        userPass.addActionListener(this);
 
         menuBar.add(jmenu);
         setJMenuBar(menuBar);
     }
 
-    public void addToMenu(String str)
+    public JMenuItem addToMenu(String str)
     {
         JMenuItem item;
         item = new JMenuItem(str);
         jmenu.add(item);
         item.addActionListener(this);
-
+        return item;
     }
     private void initMainPanel() {
         mainPanel = new CMainPanel();
         add(mainPanel);
+    }
+
+    public CMainPanel getMainPanel()
+    {
+        return mainPanel;
     }
 
     @Override
@@ -87,9 +93,9 @@ public class CFrame extends JFrame implements ActionListener{
 //            mainPanel.saveAllSerialized();
                 System.exit(0);
             }
-            else
+            else if(e.getSource() == userPass)
             {
-                mainPanel.addSpecificTab(e.getActionCommand());
+                mainPanel.addSpecificTab(e.getActionCommand(),null);
             }
         }
 
