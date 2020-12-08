@@ -21,6 +21,7 @@ public class Admin {
     public Admin()
     {
         frame = new CFrame("Admin");
+        frame.getMainPanel().addPanel("PROFILE",profilePanel());
         addFrameMenu();
         addToTab();
         frame.setVisible(true);
@@ -173,6 +174,12 @@ public class Admin {
         JTextField timeF = new JTextField();
         JTextField unitsF = new JTextField();
         JTextField dayF = new JTextField();
+        nameF.setEnabled(false);
+        teacherF.setEnabled(false);
+        studentF.setEnabled(false);
+        unitsF.setEnabled(false);
+        timeF.setEnabled(false);
+        dayF.setEnabled(false);
 
         JPanel titlePanel = new JPanel(new GridLayout(1, 6, 5, 5));
         JPanel infoPanel = new JPanel(new GridLayout(1, 6, 5, 5));
@@ -205,6 +212,30 @@ public class Admin {
         panel.add(titlePanel, BorderLayout.NORTH);
         panel.add(infoPanel, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.AFTER_LAST_LINE);
+        return panel;
+    }
+
+    public JPanel profilePanel()
+    {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        JPanel info = new JPanel(new BorderLayout(5, 5));
+        JPanel titlePanel = new JPanel(new GridLayout(1, 2, 5, 5));
+        JPanel infoPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+        JLabel name = new JLabel(" Username: ");
+        JLabel pass = new JLabel(" Password: ");
+        titlePanel.add(name);
+        titlePanel.add(pass);
+        JTextField nameF = new JTextField();
+        JTextField passF = new JTextField();
+        nameF.setEnabled(false);
+        passF.setEnabled(false);
+        infoPanel.add(nameF);
+        infoPanel.add(passF);
+        info.add(titlePanel, BorderLayout.NORTH);
+        info.add(infoPanel, BorderLayout.CENTER);
+        panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(160, 50, 100)), BorderLayout.NORTH);
+        panel.add(info, BorderLayout.CENTER);
+//        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         return panel;
     }
 }

@@ -19,7 +19,7 @@ public class CFrame extends JFrame implements ActionListener{
 
     public CFrame(String title) {
         super(title);
-
+//        mainPanel = new CMainPanel(profile);
         menuBar = new JMenuBar();
         jmenu = new JMenu("Options");
         setView();
@@ -86,7 +86,7 @@ public class CFrame extends JFrame implements ActionListener{
         if(!e.getActionCommand().equals(""))
         {
             if (e.getSource() == newItem) {
-                mainPanel.addNewTab();
+//                mainPanel.addNewTab();
             }
             else if (e.getSource() == saveItem) {
 //            mainPanel.saveNote();

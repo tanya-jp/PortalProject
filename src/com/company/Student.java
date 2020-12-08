@@ -16,6 +16,7 @@ public class Student {
     public Student()
     {
         frame = new CFrame("Student");
+        frame.getMainPanel().addPanel("PROFILE",profilePanel());
         addFrameMenu();
         addToTab();
         frame.setVisible(true);
@@ -35,6 +36,12 @@ public class Student {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Meals",setMeals());
+            }
+        });
+        increaseBudget.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.getMainPanel().addPanel("Increase budget",changeBudget());
             }
         });
 
@@ -95,4 +102,87 @@ public class Student {
         panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         return panel;
     }
+
+    public JPanel changeBudget()
+    {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JLabel id = new JLabel(" ID: ");
+        JLabel pass = new JLabel(" password: ");
+        JLabel amount = new JLabel(" amount: ");
+
+        JTextField idF = new JTextField();
+        JTextField amountF = new JTextField();
+        JPasswordField passF = new JPasswordField();
+
+        JPanel labelPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel fieldsPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+
+        labelPanel.add(id);
+        fieldsPanel.add(idF);
+
+        labelPanel.add(pass);
+        fieldsPanel.add(passF);
+
+        labelPanel.add(amount);
+        fieldsPanel.add(amountF);
+
+        panel.add(frame.getMainPanel().setLabel(" Increase budget ",
+                Color.green), BorderLayout.NORTH);
+        panel.add(fieldsPanel, BorderLayout.CENTER);
+        panel.add(labelPanel, BorderLayout.WEST);
+        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
+        return panel;
+    }
+
+    public JPanel profilePanel()
+    {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        JPanel info = new JPanel(new BorderLayout(5, 5));
+        JPanel infoPanel = new JPanel(new GridLayout(2, 4, 5, 5));
+        JLabel name = new JLabel(" Username: ");
+        JLabel pass = new JLabel(" Password: ");
+        JLabel budget = new JLabel(" budget: ");
+        JLabel average = new JLabel(" Average: ");
+        JTextField nameF = new JTextField();
+        JTextField passF = new JTextField();
+        JTextField budgetF = new JTextField();
+        JTextField averageF = new JTextField();
+        JTextField classesF = new JTextField();
+
+        infoPanel.add(name);
+        infoPanel.add(nameF);
+
+        infoPanel.add(pass);
+        infoPanel.add(passF);
+
+        infoPanel.add(budget);
+        infoPanel.add(budgetF);
+
+        infoPanel.add(average);
+        infoPanel.add(averageF);
+
+//        infoPanel.add(classes);
+
+        nameF.setEnabled(false);
+        passF.setEnabled(false);
+        budgetF.setEnabled(false);
+        averageF.setEnabled(false);
+        classesF.setEnabled(false);
+
+        info.add(infoPanel, BorderLayout.NORTH);
+        info.add(classesF, BorderLayout.CENTER);
+        panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(160, 50, 100)), BorderLayout.NORTH);
+        panel.add(info, BorderLayout.CENTER);
+//        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
+        return panel;
+    }
+
+//    public void chooseClass()
+//    {
+//        JPanel classPanel = new JPanel(new GridLayout(6, 1, 5, 5));
+//        JCheckBox class1 = new JCheckBox(" class1: ");
+//        JCheckBox class2 = new JCheckBox(" class2: ");
+//
+//    }
 }
