@@ -15,7 +15,8 @@ public class Admin {
     private JMenuItem students;
     private JMenuItem teachers;
     private JMenuItem classes;
-    private JMenuItem add;
+    private JMenuItem addStudent;
+    private JMenuItem addTeacher;
 
     public Admin()
     {
@@ -28,11 +29,13 @@ public class Admin {
 
     private void addFrameMenu()
     {
+
         meals = frame.addToMenu("Set Meals");
         students = frame.addToMenu("Students");
         teachers = frame.addToMenu("Teachers");
         classes = frame.addToMenu("Classes");
-        add = frame.addToMenu("Add");
+        addStudent = frame.addToMenu("Add Student");
+        addTeacher = frame.addToMenu("AddTeacher");
     }
 
     private void addToTab()
@@ -55,16 +58,22 @@ public class Admin {
                 frame.getMainPanel().addSpecificTab("Teachers","TEACHERS:");
             }
         });
-        add.addActionListener(new ActionListener() {
+        addTeacher.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addPanel("Add",add());
+                frame.getMainPanel().addPanel("Add Teacher",add("teacher"));
+            }
+        });
+        addStudent.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.getMainPanel().addPanel("Add Student",add("student"));
             }
         });
         classes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addSpecificTab("Classes","Teacher: \nStudents: \nTime: ");
+                frame.getMainPanel().addPanel("Classes",ClassesList());
             }
         });
     }
@@ -73,15 +82,6 @@ public class Admin {
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        JLabel label = new JLabel(" Set weekly meal plan ");
-        label.setBackground(Color.cyan);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setOpaque(true);
-        Border border = BorderFactory.createLineBorder(Color.gray, 2);
-        label.setBorder(border);
-        int labelWidth = label.getPreferredSize().width + 20;
-        int labelHeight = label.getPreferredSize().height + 20;
-        label.setPreferredSize(new Dimension(labelWidth, labelHeight));
 
         JLabel saturday = new JLabel(" Saturday: ");
         JLabel sunday = new JLabel(" Sunday: ");
@@ -116,38 +116,17 @@ public class Admin {
         daysPanel.add(thursday);
         mealsPanel.add(thursdayF);
 
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 5, 5));
-        JButton submit = new JButton("submit");
-        JButton cancel = new JButton("cancel");
-        int buttonWidth = submit.getPreferredSize().width;
-        int buttonHeight = submit.getPreferredSize().height + 10;
-        submit.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
-        int button2Width = cancel.getPreferredSize().width;
-        int button2Height = cancel.getPreferredSize().height + 10;
-        submit.setPreferredSize(new Dimension(button2Width, button2Height));
-        buttonPanel.add(cancel);
-        buttonPanel.add(submit);
-
-        panel.add(label, BorderLayout.NORTH);
+        panel.add(frame.getMainPanel().setLabel(" Set weekly meal plan ",Color.cyan), BorderLayout.NORTH);
         panel.add(daysPanel, BorderLayout.WEST);
         panel.add(mealsPanel, BorderLayout.CENTER);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         return panel;
     }
 
-    public JPanel add()
+    public JPanel add(String name)
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        JLabel label = new JLabel(" Add new Student ");
-        label.setBackground(Color.PINK);
-        label.setHorizontalAlignment(SwingConstants.HORIZONTAL);
-        label.setOpaque(true);
-        Border border = BorderFactory.createLineBorder(Color.gray, 2);
-        label.setBorder(border);
-        int labelWidth = label.getPreferredSize().width + 20;
-        int labelHeight = label.getPreferredSize().height + 20;
-        label.setPreferredSize(new Dimension(labelWidth, labelHeight));
 
         JLabel fName = new JLabel(" first name: ");
         JLabel lName = new JLabel(" last name: ");
@@ -171,22 +150,61 @@ public class Admin {
         fieldsPanel.add(pass);
         fieldsPanel.add(passF);
 
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 5, 5));
-        JButton submit = new JButton("submit");
-        JButton cancel = new JButton("cancel");
-        int buttonWidth = submit.getPreferredSize().width;
-        int buttonHeight = submit.getPreferredSize().height + 10;
-        submit.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
-        int button2Width = cancel.getPreferredSize().width;
-        int button2Height = cancel.getPreferredSize().height + 10;
-        submit.setPreferredSize(new Dimension(button2Width, button2Height));
-        buttonPanel.add(cancel);
-        buttonPanel.add(submit);
-
-        panel.add(label, BorderLayout.NORTH);
+        panel.add(frame.getMainPanel().setLabel(" Add new "+name,Color.PINK), BorderLayout.NORTH);
         panel.add(fieldsPanel, BorderLayout.CENTER);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         return panel;
     }
 
+    public JPanel ClassesList()
+    {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        JLabel name = new JLabel(" Name: ");
+        JLabel teacher = new JLabel(" Teacher: ");
+        JLabel student = new JLabel(" Students: ");
+        JLabel time = new JLabel(" Time: ");
+        JLabel units = new JLabel(" Units: ");
+        JLabel day = new JLabel(" Days: ");
+        JTextField nameF = new JTextField();
+        JTextField teacherF = new JTextField();
+        JTextField studentF = new JTextField();
+        JTextField timeF = new JTextField();
+        JTextField unitsF = new JTextField();
+        JTextField dayF = new JTextField();
+
+        JPanel titlePanel = new JPanel(new GridLayout(1, 6, 5, 5));
+        JPanel infoPanel = new JPanel(new GridLayout(1, 6, 5, 5));
+
+        titlePanel.add(name);
+        infoPanel.add(nameF);
+
+        titlePanel.add(teacher);
+        infoPanel.add(teacherF);
+
+        titlePanel.add(day);
+        infoPanel.add(dayF);
+
+        titlePanel.add(time);
+        infoPanel.add(timeF);
+
+        titlePanel.add(student);
+        infoPanel.add(studentF);
+
+        titlePanel.add(units);
+        infoPanel.add(unitsF);
+
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 1, 5, 5));
+        JButton ok = new JButton("OK");
+        int buttonWidth = ok.getPreferredSize().width;
+        int buttonHeight = ok.getPreferredSize().height + 10;
+        ok.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
+        buttonPanel.add(ok);
+
+        panel.add(titlePanel, BorderLayout.NORTH);
+        panel.add(infoPanel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.AFTER_LAST_LINE);
+        return panel;
+    }
 }

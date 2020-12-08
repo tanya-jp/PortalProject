@@ -65,6 +65,12 @@ public class CFrame extends JFrame implements ActionListener{
         item.addActionListener(this);
         return item;
     }
+
+    public JMenu addSub(JMenu sub, JMenuItem item)
+    {
+        sub.add(item);
+        return sub;
+    }
     private void initMainPanel() {
         mainPanel = new CMainPanel();
         add(mainPanel);

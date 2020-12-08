@@ -49,13 +49,17 @@ public class CMainPanel extends JPanel {
             tabbedPane.addTab("Tab " + (tabbedPane.getTabCount() + 1), textPanel);
         }
     }
+//
+//    public JPanel makeJPanel()
+//    {
+//        JPanel panel = new JPanel(new BorderLayout(5, 5));
+//        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+//    }
 
-    public JPanel addChangeUserPassTab()
+    public JLabel setLabel(String labelStr,Color color)
     {
-        JPanel panel = new JPanel(new BorderLayout(5, 5));
-        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        JLabel label = new JLabel(" Change username / password ");
-        label.setBackground(Color.getHSBColor(178, 222, 251));
+        JLabel label = new JLabel(labelStr);
+        label.setBackground(color);
         label.setHorizontalAlignment(SwingConstants.HORIZONTAL);
         label.setOpaque(true);
         Border border = BorderFactory.createLineBorder(Color.gray, 2);
@@ -63,6 +67,28 @@ public class CMainPanel extends JPanel {
         int labelWidth = label.getPreferredSize().width + 20;
         int labelHeight = label.getPreferredSize().height + 20;
         label.setPreferredSize(new Dimension(labelWidth, labelHeight));
+        return label;
+    }
+
+    public JPanel setButtons()
+    {
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 5, 5));
+        JButton submit = new JButton("submit");
+        JButton cancel = new JButton("cancel");
+        int buttonWidth = submit.getPreferredSize().width;
+        int buttonHeight = submit.getPreferredSize().height + 10;
+        submit.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
+        int button2Width = cancel.getPreferredSize().width;
+        int button2Height = cancel.getPreferredSize().height + 10;
+        submit.setPreferredSize(new Dimension(button2Width, button2Height));
+        buttonPanel.add(cancel);
+        buttonPanel.add(submit);
+        return buttonPanel;
+    }
+    public JPanel addChangeUserPassTab()
+    {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         JLabel currName = new JLabel(" your current username: ");
         JLabel newName = new JLabel(" new username: ");
@@ -87,25 +113,14 @@ public class CMainPanel extends JPanel {
         labelPanel.add(newPass);
         fieldsPanel.add(newPassF);
 
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 5, 5));
-        JButton submit = new JButton("submit");
-        JButton cancel = new JButton("cancel");
-        int buttonWidth = submit.getPreferredSize().width;
-        int buttonHeight = submit.getPreferredSize().height + 10;
-        submit.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
-        int button2Width = cancel.getPreferredSize().width;
-        int button2Height = cancel.getPreferredSize().height + 10;
-        submit.setPreferredSize(new Dimension(button2Width, button2Height));
-        buttonPanel.add(cancel);
-        buttonPanel.add(submit);
-
-        panel.add(label, BorderLayout.NORTH);
+        panel.add(setLabel(" Change username / password ", Color.getHSBColor(178, 222, 251)), BorderLayout.NORTH);
         panel.add(fieldsPanel, BorderLayout.CENTER);
         panel.add(labelPanel, BorderLayout.WEST);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+        panel.add(setButtons(), BorderLayout.SOUTH);
         addPanel("Change username / password",panel);
         return panel;
     }
+    
 
     public void addSpecificTab(String name, String text)
     {
