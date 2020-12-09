@@ -172,9 +172,8 @@ public class Student {
 
         info.add(infoPanel, BorderLayout.NORTH);
         info.add(classesF, BorderLayout.CENTER);
-        panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(160, 50, 100)), BorderLayout.NORTH);
+        panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(248, 56, 155)), BorderLayout.NORTH);
         panel.add(info, BorderLayout.CENTER);
-//        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         return panel;
     }
 

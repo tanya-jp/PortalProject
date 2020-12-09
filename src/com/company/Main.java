@@ -11,7 +11,8 @@ public class Main {
 //        frame.setVisible(true);
 //        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //        Admin admin = new Admin();
-        Student student = new Student();
+//        Student student = new Student();
+        Teacher teacher = new Teacher();
 //        System.out.println("*****");
     }
 }
