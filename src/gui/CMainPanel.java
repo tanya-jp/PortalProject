@@ -1,6 +1,6 @@
 package gui;
 
-//import utils.FileUtils;
+import utils.FileUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -16,6 +16,8 @@ import java.io.FileReader;
 public class CMainPanel extends JPanel {
 
     private JTabbedPane tabbedPane;
+    private JButton submit;
+    private JButton cancel;
 
     public CMainPanel() {
 
@@ -73,8 +75,8 @@ public class CMainPanel extends JPanel {
     public JPanel setButtons()
     {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 5, 5));
-        JButton submit = new JButton("submit");
-        JButton cancel = new JButton("cancel");
+        submit = new JButton("submit");
+        cancel = new JButton("cancel");
         int buttonWidth = submit.getPreferredSize().width;
         int buttonHeight = submit.getPreferredSize().height + 10;
         submit.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
@@ -84,6 +86,11 @@ public class CMainPanel extends JPanel {
         buttonPanel.add(cancel);
         buttonPanel.add(submit);
         return buttonPanel;
+    }
+
+    public JButton getSubmit()
+    {
+        return submit;
     }
     public JPanel addChangeUserPassTab()
     {
@@ -139,5 +146,7 @@ public class CMainPanel extends JPanel {
         textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         return textPanel;
     }
+
+
 
 }
