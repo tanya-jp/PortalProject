@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class Admin {
     private CFrame frame;
@@ -42,7 +44,7 @@ public class Admin {
         teachers = frame.addToMenu("Teachers");
         classes = frame.addToMenu("Classes");
         addStudent = frame.addToMenu("Add Student");
-        addTeacher = frame.addToMenu("AddTeacher");
+        addTeacher = frame.addToMenu("Add Teacher");
     }
 
     private void addToTab()
@@ -56,25 +58,33 @@ public class Admin {
         students.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addSpecificTab("Students","STUDENTS:");
+                try {
+                    frame.getMainPanel().addPanel("Students",showPeople("student"));
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
             }
         });
         teachers.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addSpecificTab("Teachers","TEACHERS:");
+                try {
+                    frame.getMainPanel().addPanel("Teachers",showPeople("teacher"));
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
             }
         });
         addTeacher.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addPanel("Add Teacher",add("teacher"));
+                frame.getMainPanel().addPanel("Add Teacher",addPeople("teacher"));
             }
         });
         addStudent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addPanel("Add Student",add("student"));
+                frame.getMainPanel().addPanel("Add Student",addPeople("student"));
             }
         });
         classes.addActionListener(new ActionListener() {
@@ -188,7 +198,7 @@ public class Admin {
         return panel;
     }
 
-    public JPanel add(String name)
+    public JPanel addPeople(String name)
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -211,6 +221,39 @@ public class Admin {
         panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         savePerson(userF, passF, name);
         return panel;
+    }
+
+    public JPanel showPeople(String name) throws FileNotFoundException {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.add((frame.getMainPanel().setLabel(name, Color.blue)), BorderLayout.NORTH);
+        StringBuilder info = new StringBuilder();
+        File people[] = FileUtils.getFilesInDirectory(INFO_PATH);
+        JPanel names = new JPanel(new GridLayout(people.length,1));
+        int person = 0;
+        int cnt = 0;
+        while(person < people.length)
+        {
+            String user = null ;
+            Scanner scanner = new Scanner(people[person]);
+            cnt = 0;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if(cnt == 0)
+                    user = line;
+                if(cnt == 1 && line.equals(name))
+                {
+                    info.delete(0,info.length());
+                    info.append(user);
+                    JTextField users = new JTextField(info.toString());
+                    names.add(users);
+                }
+                cnt++;
+            }
+            person++;
+        }
+
+        panel.add(names, BorderLayout.CENTER);
+        return  panel;
     }
 
     public JPanel ClassesList()
@@ -301,7 +344,7 @@ public class Admin {
             public void mouseClicked(MouseEvent e) {
                 String note_user = user.getText();
                 String note_pass = pass.getText();
-                String note = note_user + "\n" + note_pass + "\n" + name;
+                String note = note_user + "\n" + name + "\n" + note_pass;
                 System.out.println(note_user);
                 System.out.println(note_pass);
                 System.out.println(note);

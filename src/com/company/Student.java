@@ -1,17 +1,22 @@
 package com.company;
 import gui.CFrame;
+import utils.FileUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class Student {
     private CFrame frame;
     private JMenuItem increaseBudget;
     private JMenuItem meals;
     private JMenuItem classes;
+    private static final String MEALS_PATH = "./meals/";
 
     public Student()
     {
@@ -35,7 +40,11 @@ public class Student {
         meals.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addPanel("Meals",setMeals());
+                try {
+                    frame.getMainPanel().addPanel("Meals",setMeals());
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
             }
         });
         increaseBudget.addActionListener(new ActionListener() {
@@ -46,8 +55,8 @@ public class Student {
         });
 
     }
-    public JPanel setMeals()
-    {
+
+    public JPanel setMeals() throws FileNotFoundException {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -58,27 +67,66 @@ public class Student {
         JCheckBox wednesday = new JCheckBox(" Wednesday: ");
         JCheckBox thursday = new JCheckBox(" Thursday: ");
 
-        String m1[] = { "first1", "second1"};
-        JComboBox saturdayBox = new JComboBox(m1);
+        JPanel mealsPanel =new JPanel(new GridLayout(6, 1, 5, 5));
+        int days = 0;
+        File curr[] = FileUtils.getFilesInDirectory(MEALS_PATH);
+        while(days < curr.length)
+        {
+            String food1 = null;
+            String food2 = null;
+            int cnt = 0;
+            Scanner scanner = new Scanner(curr[days]);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if(cnt == 1)
+                    food1 = line;
+                else if(cnt == 2)
+                    food1 += "     " + line;
+                else if(cnt == 3)
+                    food2 = line;
+                else if(cnt == 4)
+                    food2 += "     " + line;
+                cnt++;
+            }
+            String m1[] = { food1, food2};
+            if(curr[days].toString().contains("Saturday"))
+            {
+                JComboBox saturdayBox = new JComboBox(m1);
+                mealsPanel.add(saturdayBox,0);
+            }
+            else if(curr[days].toString().contains("Sunday"))
+            {
+                JComboBox sundayBox = new JComboBox(m1);
+                mealsPanel.add(sundayBox,1);
+            }
+            else if(curr[days].toString().contains("Monday"))
+            {
+                JComboBox mondayBox = new JComboBox(m1);
+                mealsPanel.add(mondayBox,2,0);
+            }
+            else if(curr[days].toString().contains("Tuesday"))
+            {
+                JComboBox tuesdayBox = new JComboBox(m1);
+                mealsPanel.add(tuesdayBox,3);
+            }
+            else if(curr[days].toString().contains("Wednesday"))
+            {
+                JComboBox wednesdayBox = new JComboBox(m1);
+                mealsPanel.add(wednesdayBox,4);
+            }
+            else if(curr[days].toString().contains("Thursday"))
+            {
+                JComboBox thursdayBox = new JComboBox(m1);
+                mealsPanel.add(thursdayBox);
+            }
+            days++;
 
-        String m2[] = { "first2", "second2"};
-        JComboBox sundayBox = new JComboBox(m2);
+        }
 
-        String m3[] = { "first3", "second3"};
-        JComboBox mondayBox = new JComboBox(m3);
-
-        String m4[] = { "first4", "second4"};
-        JComboBox tuesdayBox = new JComboBox(m4);
-
-        String m5[] = { "first5", "second5"};
-        JComboBox wednesdayBox = new JComboBox(m5);
-
-        String m6[] = { "first6", "second6"};
-        JComboBox thursdayBox = new JComboBox(m6);
 
 
         JPanel daysPanel = new JPanel(new GridLayout(6, 1, 5, 5));
-        JPanel mealsPanel =new JPanel(new GridLayout(6, 1, 5, 5));
+
         JPanel labels = new JPanel(new BorderLayout(5, 5));
 
         daysPanel.add(saturday);
@@ -87,12 +135,6 @@ public class Student {
         daysPanel.add(tuesday);
         daysPanel.add(wednesday);
         daysPanel.add(thursday);
-        mealsPanel.add(saturdayBox);
-        mealsPanel.add(sundayBox);
-        mealsPanel.add(mondayBox);
-        mealsPanel.add(tuesdayBox);
-        mealsPanel.add(wednesdayBox);
-        mealsPanel.add(thursdayBox);
         labels.add(frame.getMainPanel().setLabel(" Set weekly meal plan ",Color.getHSBColor(122,13,14)),
                 BorderLayout.CENTER);
         labels.add(frame.getMainPanel().setLabel("Budget: ", Color.red),BorderLayout.EAST);
