@@ -7,6 +7,14 @@ public class FileUtils {
     public static File[] getFilesInDirectory(String path) {
         return new File(path).listFiles();
     }
+    public static void makeFolder(String folder)
+    {
+//        File file = new File(folder);
+////        if(!file.exists())
+//            file.mkdirs();
+        boolean isSuccessful = new File(folder).mkdirs();
+        System.out.println("Creating " + folder + " directory is successful: " + isSuccessful);
+    }
     public static void fileWriter(String content,String p) {
         String fileName = getProperFileName(content);
         File newFile = new File(p+fileName+".txt");

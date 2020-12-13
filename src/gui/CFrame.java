@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 
 public class CFrame extends JFrame implements ActionListener{
 
@@ -12,7 +13,8 @@ public class CFrame extends JFrame implements ActionListener{
     private JMenuItem newItem;
     private JMenuItem saveItem;
     private JMenuItem exitItem;
-    private JMenuItem userPass;
+    private JMenuItem user;
+    private JMenuItem pass;
     JMenuBar menuBar;
     JMenu jmenu ;
 
@@ -39,19 +41,22 @@ public class CFrame extends JFrame implements ActionListener{
 
 
         newItem = new JMenuItem("New");
-        userPass = new JMenuItem("Change username or password");
+        user = new JMenuItem("Change username");
+        pass = new JMenuItem("Change pass");
         saveItem = new JMenuItem("Save");
         exitItem = new JMenuItem("Exit");
 
         jmenu.add(newItem);
-        jmenu.add(userPass);
+        jmenu.add(user);
+        jmenu.add(pass);
         jmenu.add(saveItem);
         jmenu.add(exitItem);
 
         newItem.addActionListener(this);
         saveItem.addActionListener(this);
         exitItem.addActionListener(this);
-        userPass.addActionListener(this);
+        user.addActionListener(this);
+        pass.addActionListener(this);
 
         menuBar.add(jmenu);
         setJMenuBar(menuBar);
@@ -99,10 +104,15 @@ public class CFrame extends JFrame implements ActionListener{
 //            mainPanel.saveAllSerialized();
                 System.exit(0);
             }
-            else if(e.getSource() == userPass)
+            else if(e.getSource() == user)
             {
 //                mainPanel.addSpecificTab(e.getActionCommand(),null);
-                mainPanel.addChangeUserPassTab();
+                mainPanel.addChangeUserPassTab("user");
+            }
+            else if(e.getSource() == pass)
+            {
+//                mainPanel.addSpecificTab(e.getActionCommand(),null);
+                mainPanel.addChangeUserPassTab("pass");
             }
         }
 
@@ -110,4 +120,18 @@ public class CFrame extends JFrame implements ActionListener{
             System.out.println("Nothing detected...");
         }
     }
+
+//    public void changeUsername()
+//    {
+//        user.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                try {
+//                    frame.getMainPanel().addPanel("Meals",setMeals());
+//                } catch (FileNotFoundException fileNotFoundException) {
+//                    fileNotFoundException.printStackTrace();
+//                }
+//            }
+//        });
+//    }
 }

@@ -7,6 +7,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -17,6 +19,7 @@ public class Student {
     private JMenuItem meals;
     private JMenuItem classes;
     private static final String MEALS_PATH = "./meals/";
+    private static final String STUDENTS_PATH = "./students/";
 
     public Student()
     {
@@ -149,16 +152,21 @@ public class Student {
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JLabel username = new JLabel(" username: ");
         JLabel id = new JLabel(" ID: ");
         JLabel pass = new JLabel(" password: ");
         JLabel amount = new JLabel(" amount: ");
 
+        JTextField usernameF = new JTextField();
         JTextField idF = new JTextField();
         JTextField amountF = new JTextField();
         JPasswordField passF = new JPasswordField();
 
-        JPanel labelPanel = new JPanel(new GridLayout(3, 1, 5, 5));
-        JPanel fieldsPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel labelPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+        JPanel fieldsPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+
+        labelPanel.add(username);
+        fieldsPanel.add(usernameF);
 
         labelPanel.add(id);
         fieldsPanel.add(idF);
@@ -174,6 +182,7 @@ public class Student {
         panel.add(fieldsPanel, BorderLayout.CENTER);
         panel.add(labelPanel, BorderLayout.WEST);
         panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
+        charge(usernameF, amountF);
         return panel;
     }
 
@@ -219,6 +228,42 @@ public class Student {
         return panel;
     }
 
+    public void charge(JTextField user, JTextField amount)
+    {
+        frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String userNote = user.getText();
+                String amountNote = amount.getText();
+                String path = STUDENTS_PATH+userNote+"/budget.txt";
+                int budget = 0;
+                File budgetFile = new File(path);
+                Scanner scanner = null;
+                try {
+                    scanner = new Scanner(budgetFile);
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+                int cnt = 0;
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    if(cnt == 1)
+                        budget = Integer.parseInt(line);
+                    cnt++;
+                }
+                budget += Integer.parseInt(amountNote);
+                String note = "budget\n" + budget;
+                System.out.println(path);
+//                System.out.println(note);
+                if (!userNote.isEmpty() && !amountNote.isEmpty()){
+                    boolean isSuccessful = new File(path).mkdirs();
+                    System.out.println("Creating " + path + " directory is successful: " + isSuccessful);
+                    FileUtils.fileWriter(note, STUDENTS_PATH+userNote+"/");
+                    System.out.println(note);
+                }
+            }
+        });
+    }
 //    public void chooseClass()
 //    {
 //        JPanel classPanel = new JPanel(new GridLayout(6, 1, 5, 5));

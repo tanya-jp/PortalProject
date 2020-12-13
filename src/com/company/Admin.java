@@ -25,6 +25,8 @@ public class Admin {
     private JMenuItem addTeacher;
     private static final String INFO_PATH = "./user pass/";
     private static final String MEALS_PATH = "./meals/";
+    private static final String STUDENTS_PATH = "./students/";
+    private static final String TEACHERS_PATH = "./teachers/";
 
     public Admin()
     {
@@ -352,6 +354,15 @@ public class Admin {
                     boolean isSuccessful = new File(INFO_PATH).mkdirs();
                     System.out.println("Creating " + INFO_PATH + " directory is successful: " + isSuccessful);
                     FileUtils.fileWriter(note, INFO_PATH);
+                    if(name.equals("student"))
+                    {
+                        String average = "average\n0";
+                        String budget = "budget\n0";
+                        String path = STUDENTS_PATH+note_user+"/";
+                        FileUtils.makeFolder(path);
+                        FileUtils.fileWriter(average,path);
+                        FileUtils.fileWriter(budget,path);
+                    }
                 }
             }
         });
