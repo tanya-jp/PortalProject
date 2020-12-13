@@ -173,11 +173,11 @@ public class LoginForm {
                         }
                         else if(pos.equals("teacher"))
                         {
-                            Teacher teacher = new Teacher();
+                            Teacher teacher = new Teacher(user);
                         }
                         else
                         {
-                            Admin admin = new Admin();
+                            Admin admin = new Admin(user);
                         }
                     } catch (FileNotFoundException fileNotFoundException) {
                         fileNotFoundException.printStackTrace();

@@ -23,14 +23,16 @@ public class Admin {
     private JMenuItem classes;
     private JMenuItem addStudent;
     private JMenuItem addTeacher;
+    private String username;
     private static final String INFO_PATH = "./user pass/";
     private static final String MEALS_PATH = "./meals/";
     private static final String STUDENTS_PATH = "./students/";
     private static final String TEACHERS_PATH = "./teachers/";
 
-    public Admin()
+    public Admin(String user)
     {
-        frame = new CFrame("Admin");
+        this.username = user;
+        frame = new CFrame(user);
         frame.getMainPanel().addPanel("PROFILE",profilePanel());
         addFrameMenu();
         addToTab();
@@ -92,7 +94,7 @@ public class Admin {
         classes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addPanel("Classes",ClassesList());
+                frame.getMainPanel().addPanel("Classes",classesList());
             }
         });
     }
@@ -258,7 +260,7 @@ public class Admin {
         return  panel;
     }
 
-    public JPanel ClassesList()
+    public JPanel classesList()
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));

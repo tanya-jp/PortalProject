@@ -2,7 +2,9 @@ package com.company;
 import gui.CFrame;
 import utils.FileUtils;
 
+import javax.management.StringValueExp;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,6 +21,7 @@ public class Student {
     private JMenuItem meals;
     private JMenuItem classes;
     private static final String MEALS_PATH = "./meals/";
+    private static final String INFO_PATH = ".\\user pass\\";
     private static final String STUDENTS_PATH = "./students/";
     private String username;
     private int money;
@@ -26,7 +29,7 @@ public class Student {
     public Student(String user)
     {
         this.username = user;
-        frame = new CFrame("Student");
+        frame = new CFrame(user);
         frame.getMainPanel().addPanel("PROFILE",profilePanel());
         addFrameMenu();
         addToTab();
@@ -66,12 +69,20 @@ public class Student {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        JCheckBox saturday = new JCheckBox(" Saturday: ");
-        JCheckBox sunday = new JCheckBox(" Sunday: ");
-        JCheckBox monday = new JCheckBox(" Monday: ");
-        JCheckBox tuesday = new JCheckBox(" Tuesday: ");
-        JCheckBox wednesday = new JCheckBox(" Wednesday: ");
-        JCheckBox thursday = new JCheckBox(" Thursday: ");
+        JCheckBox saturday = new JCheckBox("Saturday ");
+        JCheckBox sunday = new JCheckBox("Sunday ");
+        JCheckBox monday = new JCheckBox("Monday ");
+        JCheckBox tuesday = new JCheckBox("Tuesday ");
+        JCheckBox wednesday = new JCheckBox("Wednesday ");
+        JCheckBox thursday = new JCheckBox("Thursday ");
+        String m[] = {null};
+        JComboBox saturdayBox = new JComboBox(m);
+        JComboBox sundayBox = new JComboBox(m);
+        JComboBox mondayBox = new JComboBox(m);
+        JComboBox tuesdayBox = new JComboBox(m);
+        JComboBox wednesdayBox = new JComboBox(m);
+        JComboBox thursdayBox = new JComboBox(m);
+        int flag1 = 0;
 
         JPanel mealsPanel =new JPanel(new GridLayout(6, 1, 5, 5));
         int days = 0;
@@ -97,39 +108,38 @@ public class Student {
             String m1[] = { food1, food2};
             if(curr[days].toString().contains("Saturday"))
             {
-                JComboBox saturdayBox = new JComboBox(m1);
+                saturdayBox = new JComboBox(m1);
                 mealsPanel.add(saturdayBox,0);
+                flag1++;
             }
             else if(curr[days].toString().contains("Sunday"))
             {
-                JComboBox sundayBox = new JComboBox(m1);
+                sundayBox = new JComboBox(m1);
                 mealsPanel.add(sundayBox,1);
             }
             else if(curr[days].toString().contains("Monday"))
             {
-                JComboBox mondayBox = new JComboBox(m1);
+                mondayBox = new JComboBox(m1);
                 mealsPanel.add(mondayBox,2,0);
             }
             else if(curr[days].toString().contains("Tuesday"))
             {
-                JComboBox tuesdayBox = new JComboBox(m1);
+                tuesdayBox = new JComboBox(m1);
                 mealsPanel.add(tuesdayBox,3);
             }
             else if(curr[days].toString().contains("Wednesday"))
             {
-                JComboBox wednesdayBox = new JComboBox(m1);
+                wednesdayBox = new JComboBox(m1);
                 mealsPanel.add(wednesdayBox,4);
             }
             else if(curr[days].toString().contains("Thursday"))
             {
-                JComboBox thursdayBox = new JComboBox(m1);
+                thursdayBox = new JComboBox(m1);
                 mealsPanel.add(thursdayBox);
             }
             days++;
 
         }
-
-
 
         JPanel daysPanel = new JPanel(new GridLayout(6, 1, 5, 5));
 
@@ -148,6 +158,12 @@ public class Student {
         panel.add(daysPanel, BorderLayout.WEST);
         panel.add(mealsPanel, BorderLayout.CENTER);
         panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
+        saveMeals(saturday, saturdayBox);
+        saveMeals(sunday, sundayBox);
+        saveMeals(monday, mondayBox);
+        saveMeals(tuesday, tuesdayBox);
+        saveMeals(wednesday, wednesdayBox);
+        saveMeals(thursday, thursdayBox);
         return panel;
     }
 
@@ -198,10 +214,19 @@ public class Student {
         JLabel pass = new JLabel(" Password: ");
         JLabel budget = new JLabel(" budget: ");
         JLabel average = new JLabel(" Average: ");
-        JTextField nameF = new JTextField();
-        JTextField passF = new JTextField();
-        JTextField budgetF = new JTextField();
-        JTextField averageF = new JTextField();
+        Border border = BorderFactory.createLineBorder(Color.gray, 2);
+        JTextField nameF = new JTextField(username);
+        nameF.setBackground(Color.DARK_GRAY);
+        nameF.setBorder(border);
+        JTextField passF = new JTextField(getPass());
+        passF.setBackground(Color.DARK_GRAY);
+        passF.setBorder(border);
+        JTextField budgetF = new JTextField(String.valueOf(getBudget()));
+        budgetF.setBackground(Color.DARK_GRAY);
+        budgetF.setBorder(border);
+        JTextField averageF = new JTextField(String.valueOf(getAverage()));
+        averageF.setBackground(Color.DARK_GRAY);
+        averageF.setBorder(border);
         JTextField classesF = new JTextField();
 
         infoPanel.add(name);
@@ -216,7 +241,7 @@ public class Student {
         infoPanel.add(average);
         infoPanel.add(averageF);
 
-//        infoPanel.add(classes);
+        infoPanel.setBackground(Color.gray);
 
         nameF.setEnabled(false);
         passF.setEnabled(false);
@@ -231,15 +256,15 @@ public class Student {
         return panel;
     }
 
-    public String getPath()
+    public String getPath(String str)
     {
-        String path = STUDENTS_PATH+username+"/budget.txt";
+        String path = STUDENTS_PATH+username+"/"+str+".txt";
         return path;
     }
     public int getBudget()
     {
         int budget = 0;
-        File budgetFile = new File(getPath());
+        File budgetFile = new File(getPath("budget"));
         Scanner scanner = null;
         try {
             scanner = new Scanner(budgetFile);
@@ -255,6 +280,44 @@ public class Student {
         }
         return  budget;
     }
+    public String getPass()
+    {
+        String  pass = null;
+        File file = new File(INFO_PATH+username+".txt");
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(file);
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+        int cnt = 0;
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if(cnt == 2)
+                pass = line;
+            cnt++;
+        }
+        return  pass;
+    }
+    public int getAverage()
+    {
+        int average = 0;
+        File averageFile = new File(getPath("average"));
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(averageFile);
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+        int cnt = 0;
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if(cnt == 2)
+                average = Integer.parseInt(line);
+            cnt++;
+        }
+        return  average;
+    }
     public void charge( JTextField amount)
     {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
@@ -265,12 +328,31 @@ public class Student {
                 budget += Integer.parseInt(amountNote);
                 money = budget;
                 String note = "budget\n" + budget;
-                System.out.println(getPath());
+                System.out.println(getPath("budget"));
 //                System.out.println(note);
                 if (!amountNote.isEmpty()){
-                    boolean isSuccessful = new File(getPath()).mkdirs();
-                    System.out.println("Creating " + getPath() + " directory is successful: " + isSuccessful);
+                    boolean isSuccessful = new File(getPath("budget")).mkdirs();
+                    System.out.println("Creating " + getPath("budget") + " directory is successful: " + isSuccessful);
                     FileUtils.fileWriter(note, STUDENTS_PATH+username+"/");
+                    System.out.println(note);
+                }
+            }
+        });
+    }
+
+    public void saveMeals(JCheckBox day, JComboBox meals)
+    {
+        frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String dayNote = day.getText();
+                if(day.isSelected())
+                {
+                    String path = STUDENTS_PATH+username+"/meals/";
+                    FileUtils.makeFolder(path);
+                    String mealNote = meals.getSelectedItem().toString();
+                    String note = dayNote + "\n" + mealNote;
+                    FileUtils.fileWriter(note, path);
                     System.out.println(note);
                 }
             }
@@ -283,8 +365,4 @@ public class Student {
 //        JCheckBox class2 = new JCheckBox(" class2: ");
 //
 //    }
-    public void closeTab()
-    {
-        frame.setVisible(false);
-    }
 }

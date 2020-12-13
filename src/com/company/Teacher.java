@@ -16,10 +16,12 @@ public class Teacher {
     private JMenuItem newClass;
     private JMenuItem students;
     private JList<File> directoryList;
+    private String username;
 
-    public Teacher()
+    public Teacher(String user)
     {
-        frame = new CFrame("Teacher");
+        this.username = user;
+        frame = new CFrame(user);
         frame.getMainPanel().addPanel("PROFILE",profilePanel());
         addFrameMenu();
         addToTab();
@@ -39,7 +41,7 @@ public class Teacher {
         newClass.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                frame.getMainPanel().addPanel("Meals",setMeals());
+                frame.getMainPanel().addPanel("New class",createClass());
             }
         });
         students.addActionListener(new ActionListener() {
@@ -153,6 +155,69 @@ public class Teacher {
         panel.add(tabbedPane, BorderLayout.CENTER);
 //        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         return panel;
+    }
+
+    public JPanel createClass()
+    {
+        JPanel panel1 = new JPanel(new BorderLayout());
+        JPanel panel2 = new JPanel(new GridLayout(3,1));
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JLabel label = frame.getMainPanel().setLabel("Set new class", Color.MAGENTA);
+
+        JPanel info = new JPanel(new BorderLayout(5,5));
+
+        JLabel name = new JLabel("Course title: ");
+        JLabel unit = new JLabel("Unit: ");
+        JLabel capacity = new JLabel("Capacity: ");
+        JPanel titles = new JPanel(new GridLayout(3,1));
+        titles.add(name);
+        titles.add(unit);
+        titles.add(capacity);
+        titles.setBackground(Color.LIGHT_GRAY);
+
+        JTextField nameF = new JTextField();
+        JTextField unitF = new JTextField();
+        JTextField capacityF = new JTextField();
+        JPanel boxes = new JPanel(new GridLayout(3,1));
+        boxes.add(nameF);
+        boxes.add(unitF);
+        boxes.add(capacityF);
+
+        info.add(titles,BorderLayout.WEST);
+        info.add(boxes, BorderLayout.CENTER);
+
+        JCheckBox saturday = new JCheckBox(" Saturday ");
+        JCheckBox sunday = new JCheckBox(" Sunday ");
+        JCheckBox monday = new JCheckBox(" Monday ");
+        JCheckBox tuesday = new JCheckBox(" Tuesday ");
+        JCheckBox wednesday = new JCheckBox(" Wednesday ");
+        JPanel days = new JPanel(new GridLayout(1,5));
+        days.add(saturday);
+        days.add(sunday);
+        days.add(monday);
+        days.add(tuesday);
+        days.add(wednesday);
+
+        JCheckBox time1 = new JCheckBox("8-10 ");
+        JCheckBox time2 = new JCheckBox("10-12 ");
+        JCheckBox time3 = new JCheckBox("14-16 ");
+        JPanel times = new JPanel(new GridLayout(1,3));
+        times.add(time1);
+        times.add(time2);
+        times.add(time3);
+
+        panel1.add(label, BorderLayout.NORTH);
+        panel1.add(info, BorderLayout.CENTER);
+        panel2.add(days);
+        panel2.add(times);
+        panel2.add(frame.getMainPanel().setButtons());
+
+        panel.add(panel1, BorderLayout.CENTER);
+        panel.add(panel2, BorderLayout.SOUTH);
+
+        return panel;
+
     }
 }
 
