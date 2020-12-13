@@ -1,5 +1,6 @@
 package com.company;
 
+import gui.CFrame;
 import utils.FileUtils;
 
 import javax.swing.*;
@@ -25,9 +26,10 @@ public class LoginForm {
     public LoginForm(String title) {
         loginForm = new JFrame(title);
         loginForm.setLocationRelativeTo(null);
+        loginForm.setLocation(700, 300);
         loginForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        JPanel panel = new JPanel(new BorderLayout(1000, 50));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
         loginForm.setContentPane(panel);
 
@@ -167,7 +169,7 @@ public class LoginForm {
                         String pos = findPosition(user);
                         if(pos.equals("student"))
                         {
-                            Student student = new Student();
+                            Student student = new Student(user);
                         }
                         else if(pos.equals("teacher"))
                         {

@@ -1,5 +1,7 @@
 package gui;
 
+import com.company.LoginForm;
+
 import javax.swing.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -85,6 +87,10 @@ public class CFrame extends JFrame implements ActionListener{
     {
         return mainPanel;
     }
+    public void closeTab()
+    {
+        this.setVisible(false);
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -102,7 +108,10 @@ public class CFrame extends JFrame implements ActionListener{
 //            mainPanel.saveAll();
 //            mainPanel.saveAllStream();
 //            mainPanel.saveAllSerialized();
-                System.exit(0);
+//                System.exit(0);
+                closeTab();
+                LoginForm loginForm = new LoginForm("log");
+                loginForm.showGUI();
             }
             else if(e.getSource() == user)
             {

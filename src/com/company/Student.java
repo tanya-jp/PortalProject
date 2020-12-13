@@ -20,9 +20,12 @@ public class Student {
     private JMenuItem classes;
     private static final String MEALS_PATH = "./meals/";
     private static final String STUDENTS_PATH = "./students/";
+    private String username;
+    private int money;
 
-    public Student()
+    public Student(String user)
     {
+        this.username = user;
         frame = new CFrame("Student");
         frame.getMainPanel().addPanel("PROFILE",profilePanel());
         addFrameMenu();
@@ -140,7 +143,7 @@ public class Student {
         daysPanel.add(thursday);
         labels.add(frame.getMainPanel().setLabel(" Set weekly meal plan ",Color.getHSBColor(122,13,14)),
                 BorderLayout.CENTER);
-        labels.add(frame.getMainPanel().setLabel("Budget: ", Color.red),BorderLayout.EAST);
+        labels.add(frame.getMainPanel().setLabel("Budget: "+getBudget(), Color.red),BorderLayout.EAST);
         panel.add(labels, BorderLayout.NORTH);
         panel.add(daysPanel, BorderLayout.WEST);
         panel.add(mealsPanel, BorderLayout.CENTER);
@@ -152,21 +155,21 @@ public class Student {
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        JLabel username = new JLabel(" username: ");
+//        JLabel username = new JLabel(" username: ");
         JLabel id = new JLabel(" ID: ");
         JLabel pass = new JLabel(" password: ");
         JLabel amount = new JLabel(" amount: ");
 
-        JTextField usernameF = new JTextField();
+//        JTextField usernameF = new JTextField();
         JTextField idF = new JTextField();
         JTextField amountF = new JTextField();
         JPasswordField passF = new JPasswordField();
 
-        JPanel labelPanel = new JPanel(new GridLayout(4, 1, 5, 5));
-        JPanel fieldsPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+        JPanel labelPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel fieldsPanel = new JPanel(new GridLayout(3, 1, 5, 5));
 
-        labelPanel.add(username);
-        fieldsPanel.add(usernameF);
+//        labelPanel.add(username);
+//        fieldsPanel.add(usernameF);
 
         labelPanel.add(id);
         fieldsPanel.add(idF);
@@ -182,7 +185,7 @@ public class Student {
         panel.add(fieldsPanel, BorderLayout.CENTER);
         panel.add(labelPanel, BorderLayout.WEST);
         panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
-        charge(usernameF, amountF);
+        charge(amountF);
         return panel;
     }
 
@@ -228,37 +231,46 @@ public class Student {
         return panel;
     }
 
-    public void charge(JTextField user, JTextField amount)
+    public String getPath()
+    {
+        String path = STUDENTS_PATH+username+"/budget.txt";
+        return path;
+    }
+    public int getBudget()
+    {
+        int budget = 0;
+        File budgetFile = new File(getPath());
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(budgetFile);
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+        int cnt = 0;
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if(cnt == 1)
+                budget = Integer.parseInt(line);
+            cnt++;
+        }
+        return  budget;
+    }
+    public void charge( JTextField amount)
     {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String userNote = user.getText();
                 String amountNote = amount.getText();
-                String path = STUDENTS_PATH+userNote+"/budget.txt";
-                int budget = 0;
-                File budgetFile = new File(path);
-                Scanner scanner = null;
-                try {
-                    scanner = new Scanner(budgetFile);
-                } catch (FileNotFoundException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
-                }
-                int cnt = 0;
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    if(cnt == 1)
-                        budget = Integer.parseInt(line);
-                    cnt++;
-                }
+                int budget = getBudget();
                 budget += Integer.parseInt(amountNote);
+                money = budget;
                 String note = "budget\n" + budget;
-                System.out.println(path);
+                System.out.println(getPath());
 //                System.out.println(note);
-                if (!userNote.isEmpty() && !amountNote.isEmpty()){
-                    boolean isSuccessful = new File(path).mkdirs();
-                    System.out.println("Creating " + path + " directory is successful: " + isSuccessful);
-                    FileUtils.fileWriter(note, STUDENTS_PATH+userNote+"/");
+                if (!amountNote.isEmpty()){
+                    boolean isSuccessful = new File(getPath()).mkdirs();
+                    System.out.println("Creating " + getPath() + " directory is successful: " + isSuccessful);
+                    FileUtils.fileWriter(note, STUDENTS_PATH+username+"/");
                     System.out.println(note);
                 }
             }
@@ -271,4 +283,8 @@ public class Student {
 //        JCheckBox class2 = new JCheckBox(" class2: ");
 //
 //    }
+    public void closeTab()
+    {
+        frame.setVisible(false);
+    }
 }
