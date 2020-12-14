@@ -6,6 +6,7 @@ import javax.management.StringValueExp;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,11 +21,14 @@ public class Student {
     private JMenuItem increaseBudget;
     private JMenuItem meals;
     private JMenuItem classes;
+    private JList<File> directoryList;
     private static final String MEALS_PATH = "./meals/";
     private static final String INFO_PATH = ".\\user pass\\";
     private static final String STUDENTS_PATH = "./students/";
+    private static final String CLASSES_PATH = ".\\classes\\";
     private String username;
     private int money;
+    JTabbedPane tabbedPane = new JTabbedPane();
 
     public Student(String user)
     {
@@ -44,6 +48,80 @@ public class Student {
         classes = frame.addToMenu("Classes");
         increaseBudget = frame.addToMenu("Increase budget");
     }
+
+    private JScrollPane initDirectoryList() {
+        File[] files = FileUtils.getFilesInDirectory(CLASSES_PATH);
+        System.out.println(files.length);
+        directoryList = new JList<>(files);
+        directoryList = new JList<>();
+
+        directoryList.setBackground(new Color(211, 211, 211));
+        directoryList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        directoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        directoryList.setVisibleRowCount(-1);
+        directoryList.setMinimumSize(new Dimension(130, 100));
+        directoryList.setMaximumSize(new Dimension(130, 100));
+        directoryList.setFixedCellWidth(130);
+        directoryList.setCellRenderer(new MyCellRenderer());
+        directoryList.addMouseListener(new MyMouseAdapter());
+        directoryList.setListData(files);
+
+        JScrollPane panel = new JScrollPane(directoryList);
+        return panel;
+    }
+    private class MyCellRenderer extends DefaultListCellRenderer {
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object object, int index, boolean isSelected, boolean cellHasFocus) {
+            if (object instanceof File) {
+                File file = (File) object;
+                setText(file.getName());
+                setIcon(FileSystemView.getFileSystemView().getSystemIcon(file));
+                if (isSelected) {
+                    setBackground(list.getSelectionBackground());
+                    setForeground(list.getSelectionForeground());
+                } else {
+                    setBackground(list.getBackground());
+                    setForeground(list.getForeground());
+                }
+                setEnabled(list.isEnabled());
+            }
+            return this;
+        }
+    }
+    private class MyMouseAdapter extends MouseAdapter {
+        @Override
+        public void mouseClicked(MouseEvent eve) {
+            // Double-click detected
+            if (eve.getClickCount() == 2) {
+                int index = directoryList.locationToIndex(eve.getPoint());
+//                System.out.println("Item " + index + " is clicked...");
+                File curr[] = FileUtils.getFilesInDirectory(CLASSES_PATH);
+                File files[] = FileUtils.getFilesInDirectory(curr[index].toString());
+                int cnt = 0;
+                String content = "class\n";
+                while (cnt < files.length)
+                {
+                    content += FileUtils.fileReader(files[cnt]) + "\n";
+                    cnt ++;
+                }
+                openExistingNote(content, tabbedPane);
+            }
+        }
+    }
+    public void openExistingNote(String content, JTabbedPane tabbedPane) {
+        JTextArea existPanel = createTextPanel();
+        existPanel.setText(content);
+
+//        int tabIndex = tabbedPane.getTabCount() + 1;
+        tabbedPane.addTab(FileUtils.getProperFileName(content) , existPanel);
+//        tabbedPane.setSelectedIndex(tabIndex - 1);
+    }
+    private JTextArea createTextPanel() {
+        JTextArea textPanel = new JTextArea();
+        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        return textPanel;
+    }
     private void addToTab()
     {
         meals.addActionListener(new ActionListener() {
@@ -60,6 +138,13 @@ public class Student {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Increase budget",changeBudget());
+            }
+        });
+
+        classes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.getMainPanel().addPanel("Choose class",viewClasses());
             }
         });
 
@@ -340,6 +425,13 @@ public class Student {
         });
     }
 
+    public JPanel viewClasses()
+    {
+        JPanel panel = new JPanel(new BorderLayout(1,2));
+        panel.add(initDirectoryList(), BorderLayout.WEST);
+        panel.add(tabbedPane, BorderLayout.CENTER);
+        return panel;
+    }
     public void saveMeals(JCheckBox day, JComboBox meals)
     {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
