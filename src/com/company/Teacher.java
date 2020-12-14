@@ -115,7 +115,6 @@ public class Teacher {
             if (eve.getClickCount() == 2) {
                 int index = directoryList.locationToIndex(eve.getPoint());
                 System.out.println("Item " + index + " is clicked...");
-                //TODO: Phase1: Click on file is handled... Just load content into JTextArea
                 File curr[] = FileUtils.getFilesInDirectory(TEACHER_PATH + username + "\\");
                 String content = FileUtils.fileReader(curr[index]);
 //                String content = FileUtils.streamFileReader(curr[index]);
@@ -295,6 +294,8 @@ public class Teacher {
                     FileUtils.fileWriter(unitFile, thisClassPath);
                     String capacityFile = "capacity\n" + capacityNote;
                     FileUtils.fileWriter(capacityFile, thisClassPath);
+                    String nameFile = "name\n" + nameNote;
+                    FileUtils.fileWriter(nameFile, thisClassPath);
                     FileUtils.fileWriter(daysNote, thisClassPath);
                     FileUtils.fileWriter(timesNote, thisClassPath);
                 }

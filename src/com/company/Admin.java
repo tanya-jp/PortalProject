@@ -360,10 +360,12 @@ public class Admin {
                     {
                         String average = "average\n0";
                         String budget = "budget\n0";
+                        String unit = "unit\n0";
                         String path = STUDENTS_PATH+note_user+"/";
                         FileUtils.makeFolder(path);
                         FileUtils.fileWriter(average,path);
                         FileUtils.fileWriter(budget,path);
+                        FileUtils.fileWriter(unit,path);
                     }
                     else if(name.equals("teacher"))
                     {

@@ -2,7 +2,6 @@ package com.company;
 import gui.CFrame;
 import utils.FileUtils;
 
-import javax.management.StringValueExp;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -26,9 +25,12 @@ public class Student {
     private static final String INFO_PATH = ".\\user pass\\";
     private static final String STUDENTS_PATH = "./students/";
     private static final String CLASSES_PATH = ".\\classes\\";
+    private static final String TEACHER_PATH = ".\\teachers\\";
     private String username;
     private int money;
     JTabbedPane tabbedPane = new JTabbedPane();
+    private File files[];
+    JButton select = new JButton("Select");
 
     public Student(String user)
     {
@@ -97,25 +99,31 @@ public class Student {
                 int index = directoryList.locationToIndex(eve.getPoint());
 //                System.out.println("Item " + index + " is clicked...");
                 File curr[] = FileUtils.getFilesInDirectory(CLASSES_PATH);
-                File files[] = FileUtils.getFilesInDirectory(curr[index].toString());
+                files = FileUtils.getFilesInDirectory(curr[index].toString());
+//                viewClasses(files);
                 int cnt = 0;
                 String content = "class\n";
                 while (cnt < files.length)
                 {
-                    content += FileUtils.fileReader(files[cnt]) + "\n";
+                    if(!FileUtils.fileReader(files[cnt]).toString().contains("name"))
+                        content += FileUtils.fileReader(files[cnt]) + "\n";
                     cnt ++;
                 }
-                openExistingNote(content, tabbedPane);
+                openExistingNote(content);
             }
         }
     }
-    public void openExistingNote(String content, JTabbedPane tabbedPane) {
+
+    public void openExistingNote(String content) {
+        JPanel panel = new JPanel(new BorderLayout(5,5));
+//        JButton select = new JButton("Select");
         JTextArea existPanel = createTextPanel();
         existPanel.setText(content);
-
-//        int tabIndex = tabbedPane.getTabCount() + 1;
-        tabbedPane.addTab(FileUtils.getProperFileName(content) , existPanel);
-//        tabbedPane.setSelectedIndex(tabIndex - 1);
+        panel.add(existPanel, BorderLayout.CENTER);
+        panel.add(select, BorderLayout.SOUTH);
+        int tabIndex = tabbedPane.getTabCount() + 1;
+        tabbedPane.addTab("class " + (tabbedPane.getTabCount() + 1), panel);
+        tabbedPane.setSelectedIndex(tabIndex - 1);
     }
     private JTextArea createTextPanel() {
         JTextArea textPanel = new JTextArea();
@@ -365,6 +373,25 @@ public class Student {
         }
         return  budget;
     }
+    public int getUnit()
+    {
+        int unit = 0;
+        File budgetFile = new File(getPath("unit"));
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(budgetFile);
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+        int cnt = 0;
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if(cnt == 1)
+                unit = Integer.parseInt(line);
+            cnt++;
+        }
+        return  unit;
+    }
     public String getPass()
     {
         String  pass = null;
@@ -428,9 +455,138 @@ public class Student {
     public JPanel viewClasses()
     {
         JPanel panel = new JPanel(new BorderLayout(1,2));
+//        JButton select = new JButton("Select");
+        panel.add(frame.getMainPanel().setLabel("Choose class", Color.white), BorderLayout.NORTH);
         panel.add(initDirectoryList(), BorderLayout.WEST);
         panel.add(tabbedPane, BorderLayout.CENTER);
+
+//        panel.add(select, BorderLayout.SOUTH);
+        saveClass();
         return panel;
+    }
+
+    public void saveClass()
+    {
+        select.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("******");
+                int cnt = 0;
+                String content = "class\n";
+                String teacher = null;
+                String title = null;
+                while (cnt < files.length)
+                {
+                    content += FileUtils.fileReader(files[cnt]) + "\n";
+                    System.out.println(files[cnt]);
+                    if(files[cnt].toString().contains("unit"))
+                    {
+                        int unit = getUnit();
+                        Scanner scanner = null;
+                        try {
+                            scanner = new Scanner(files[cnt]);
+                        } catch (FileNotFoundException fileNotFoundException) {
+                            fileNotFoundException.printStackTrace();
+                        }
+                        int counter = 0;
+                        while (scanner.hasNextLine()) {
+                            String line = scanner.nextLine();
+                            if(counter == 1)
+                                unit += Integer.parseInt(line);
+                            counter++;
+                        }
+                        int flag = 0;
+                        if(unit>20)
+                        {
+                            if(getAverage()<17)
+                            {
+                                JOptionPane.showMessageDialog(frame, "More than 20!", "Error!", JOptionPane.ERROR_MESSAGE);
+                                flag++;
+                            }
+                        }
+                        if(flag == 0)
+                        {
+                            System.out.println(unit);
+                            String unitNote = "unit\n"+String.valueOf(unit);
+                            String path = STUDENTS_PATH+username+"/";
+                            FileUtils.fileWriter(unitNote,path);
+                            JOptionPane.showMessageDialog(frame, "Successful!", "Result", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                    else if(files[cnt].toString().contains("teacher"))
+                    {
+                        Scanner scanner = null;
+                        try {
+                            scanner = new Scanner(files[cnt]);
+                        } catch (FileNotFoundException fileNotFoundException) {
+                            fileNotFoundException.printStackTrace();
+                        }
+                        int counter = 0;
+                        while (scanner.hasNextLine()) {
+                            String line = scanner.nextLine();
+                            if(counter == 1)
+                                teacher = line;
+                            counter++;
+                        }
+//                        String path = TEACHER_PATH+teacher+"\\"+
+                    }
+                    else if(files[cnt].toString().contains("name"))
+                    {
+                        Scanner scanner = null;
+                        try {
+                            scanner = new Scanner(files[cnt]);
+                        } catch (FileNotFoundException fileNotFoundException) {
+                            fileNotFoundException.printStackTrace();
+                        }
+                        int counter = 0;
+                        while (scanner.hasNextLine()) {
+                            String line = scanner.nextLine();
+                            if(counter == 1)
+                                title = line;
+                            counter++;
+                        }
+                    }
+                    cnt ++;
+                }
+                if(!title.equals(null) && !teacher.equals(null))
+                {
+                    int flag = 0;
+                    String students = "";
+                    String path = TEACHER_PATH + teacher + "\\";
+                    File className[] = FileUtils.getFilesInDirectory(path);
+                    int counter = 0;
+                    while (counter < className.length)
+                    {
+                        Scanner scanner = null;
+                    try {
+                        scanner = new Scanner(className[counter]);
+                    } catch (FileNotFoundException fileNotFoundException) {
+                        fileNotFoundException.printStackTrace();
+                    }
+                    while (scanner.hasNextLine()) {
+
+                        String line = scanner.nextLine();
+                        students += line + "\n";
+                        if(line.equals(username))
+                        {
+                            JOptionPane.showMessageDialog(frame, "You have chosen this class!", "Error!", JOptionPane.ERROR_MESSAGE);
+                            flag++;
+                        }
+                    }
+                        counter++;
+                    }
+                    if(flag == 0)
+                    {
+                        students += username;
+                        System.out.println(students);
+                        FileUtils.fileWriter(students, TEACHER_PATH + teacher + "\\");
+                        JOptionPane.showMessageDialog(frame, "Successful!", "Result", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+//                System.out.println(content);
+            }
+
+        });
     }
     public void saveMeals(JCheckBox day, JComboBox meals)
     {
