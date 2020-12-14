@@ -14,6 +14,9 @@ public class Main {
 //        Student student = new Student();
         LoginForm loginForm = new LoginForm("log");
         loginForm.showGUI();
+//        String str = "salam    1";
+//        String[] arrOfStr = str.split(" ", 5);
+//        System.out.println(arrOfStr[0]);
 //        Teacher teacher = new Teacher();
 //        System.out.println("*****");
     }

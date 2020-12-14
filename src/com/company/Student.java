@@ -594,14 +594,22 @@ public class Student {
             @Override
             public void mouseClicked(MouseEvent e) {
                 String dayNote = day.getText();
-                if(day.isSelected())
-                {
-                    String path = STUDENTS_PATH+username+"/meals/";
+                if (day.isSelected()) {
+                    String path = STUDENTS_PATH + username + "/meals/";
                     FileUtils.makeFolder(path);
                     String mealNote = meals.getSelectedItem().toString();
-                    String note = dayNote + "\n" + mealNote;
-                    FileUtils.fileWriter(note, path);
-                    System.out.println(note);
+                    String[] arrOfStr = mealNote.split("     ", 5);
+                    if (getBudget() < Integer.parseInt(arrOfStr[1])) {
+                        JOptionPane.showMessageDialog(frame, "not enough!", "Result", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        String note = dayNote + "\n" + mealNote;
+                        FileUtils.fileWriter(note, path);
+                        System.out.println(note);
+                        String budgetNote = "budget\n" + (getBudget() - Integer.parseInt(arrOfStr[1]));
+                        boolean isSuccessful = new File(getPath("budget")).mkdirs();
+                        System.out.println("Creating " + getPath("budget") + " directory is successful: " + isSuccessful);
+                        FileUtils.fileWriter(budgetNote, STUDENTS_PATH + username + "/");
+                    }
                 }
             }
         });
