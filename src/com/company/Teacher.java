@@ -1,6 +1,7 @@
 package com.company;
 
 import gui.CFrame;
+import utils.FileUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -17,6 +18,7 @@ public class Teacher {
     private JMenuItem students;
     private JList<File> directoryList;
     private String username;
+    private static final String CLASSES_PATH = ".\\classes\\";
 
     public Teacher(String user)
     {
@@ -187,11 +189,11 @@ public class Teacher {
         info.add(titles,BorderLayout.WEST);
         info.add(boxes, BorderLayout.CENTER);
 
-        JCheckBox saturday = new JCheckBox(" Saturday ");
-        JCheckBox sunday = new JCheckBox(" Sunday ");
-        JCheckBox monday = new JCheckBox(" Monday ");
-        JCheckBox tuesday = new JCheckBox(" Tuesday ");
-        JCheckBox wednesday = new JCheckBox(" Wednesday ");
+        JCheckBox saturday = new JCheckBox("Saturday ");
+        JCheckBox sunday = new JCheckBox("Sunday ");
+        JCheckBox monday = new JCheckBox("Monday ");
+        JCheckBox tuesday = new JCheckBox("Tuesday ");
+        JCheckBox wednesday = new JCheckBox("Wednesday ");
         JPanel days = new JPanel(new GridLayout(1,5));
         days.add(saturday);
         days.add(sunday);
@@ -216,8 +218,58 @@ public class Teacher {
         panel.add(panel1, BorderLayout.CENTER);
         panel.add(panel2, BorderLayout.SOUTH);
 
+        setClass(nameF, unitF, capacityF,
+                saturday, sunday, monday, tuesday, wednesday,
+                time1, time2, time3);
         return panel;
 
+    }
+
+    public void setClass(JTextField name, JTextField unit, JTextField capacity,
+                         JCheckBox d1, JCheckBox d2, JCheckBox d3, JCheckBox d4, JCheckBox d5,
+                         JCheckBox t1, JCheckBox t2, JCheckBox t3)
+    {
+        frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String nameNote = name.getText();
+                String unitNote = unit.getText();
+                String capacityNote = capacity.getText();
+                String daysNote = "days\n";
+                String timesNote = "times\n";
+                String thisClassPath = CLASSES_PATH+nameNote+"\\";
+                if(d1.isSelected())
+                    daysNote = daysNote + d1.getText() + "\n";
+                if(d2.isSelected())
+                    daysNote = daysNote + d2.getText() + "\n";
+                if(d3.isSelected())
+                    daysNote = daysNote + d3.getText() + "\n";
+                if(d4.isSelected())
+                    daysNote = daysNote + d4.getText() + "\n";
+                if(d5.isSelected())
+                    daysNote = daysNote + d5.getText() + "\n";
+
+                if(t1.isSelected())
+                    timesNote += t1.getText();
+                if(t2.isSelected())
+                    timesNote += t2.getText();
+                if(t3.isSelected())
+                    timesNote += t3.getText();
+
+                if (!nameNote.isEmpty() && !unitNote.isEmpty() && !capacityNote.isEmpty()){
+                    boolean isSuccessful1 = new File(CLASSES_PATH).mkdirs();
+                    boolean isSuccessful2 = new File(thisClassPath).mkdirs();
+                    String teacherFile = "teacher\n" + username;
+                    FileUtils.fileWriter(teacherFile, thisClassPath);
+                    String unitFile = "unit\n" + unitNote;
+                    FileUtils.fileWriter(unitFile, thisClassPath);
+                    String capacityFile = "capacity\n" + capacityNote;
+                    FileUtils.fileWriter(capacityFile, thisClassPath);
+                    FileUtils.fileWriter(daysNote, thisClassPath);
+                    FileUtils.fileWriter(timesNote, thisClassPath);
+                }
+            }
+        });
     }
 }
 
