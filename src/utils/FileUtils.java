@@ -61,7 +61,7 @@ public class FileUtils {
         return string;
     }
 
-    private static String getProperFileName(String content) {
+     public static String getProperFileName(String content) {
         int loc = content.indexOf("\n");
         if (loc != -1) {
             return content.substring(0, loc);

@@ -365,6 +365,11 @@ public class Admin {
                         FileUtils.fileWriter(average,path);
                         FileUtils.fileWriter(budget,path);
                     }
+                    else if(name.equals("teacher"))
+                    {
+                        String path = TEACHERS_PATH+note_user+"/";
+                        FileUtils.makeFolder(path);
+                    }
                 }
             }
         });

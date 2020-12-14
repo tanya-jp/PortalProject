@@ -4,6 +4,7 @@ import gui.CFrame;
 import utils.FileUtils;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class Teacher {
     private CFrame frame;
@@ -19,6 +22,9 @@ public class Teacher {
     private JList<File> directoryList;
     private String username;
     private static final String CLASSES_PATH = ".\\classes\\";
+    private static final String TEACHER_PATH = ".\\teachers\\";
+    private static final String INFO_PATH = ".\\user pass\\";
+    JTabbedPane tabbedPane = new JTabbedPane();
 
     public Teacher(String user)
     {
@@ -61,9 +67,9 @@ public class Teacher {
 //    }
 
     private JScrollPane initDirectoryList() {
-//        File[] files = FileUtils.getFilesInDirectory();
-//        File[] files = FileUtils.getSerializedFilesInDirectory();
-//        directoryList = new JList<>(files);
+        File[] files = FileUtils.getFilesInDirectory(TEACHER_PATH + username + "\\");
+        System.out.println(files.length);
+        directoryList = new JList<>(files);
         directoryList = new JList<>();
 
         directoryList.setBackground(new Color(211, 211, 211));
@@ -75,8 +81,10 @@ public class Teacher {
         directoryList.setFixedCellWidth(130);
         directoryList.setCellRenderer(new MyCellRenderer());
         directoryList.addMouseListener(new MyMouseAdapter());
+        directoryList.setListData(files);
 
-        return (new JScrollPane(directoryList));
+        JScrollPane panel = new JScrollPane(directoryList);
+        return panel;
     }
 
 
@@ -108,12 +116,12 @@ public class Teacher {
                 int index = directoryList.locationToIndex(eve.getPoint());
                 System.out.println("Item " + index + " is clicked...");
                 //TODO: Phase1: Click on file is handled... Just load content into JTextArea
-//                File curr[] = FileUtils.getFilesInDirectory();
-//                String content = FileUtils.fileReader(curr[index]);
+                File curr[] = FileUtils.getFilesInDirectory(TEACHER_PATH + username + "\\");
+                String content = FileUtils.fileReader(curr[index]);
 //                String content = FileUtils.streamFileReader(curr[index]);
 //                File curr[] = FileUtils.getSerializedFilesInDirectory();
 //                String content = FileUtils.readObject(curr[index]);
-//                openExistingNote(content);
+                openExistingNote(content, tabbedPane);
             }
         }
     }
@@ -121,9 +129,9 @@ public class Teacher {
         JTextArea existPanel = createTextPanel();
         existPanel.setText(content);
 
-        int tabIndex = tabbedPane.getTabCount() + 1;
-        tabbedPane.addTab("Tab " + tabIndex, existPanel);
-        tabbedPane.setSelectedIndex(tabIndex - 1);
+//        int tabIndex = tabbedPane.getTabCount() + 1;
+        tabbedPane.addTab(FileUtils.getProperFileName(content) , existPanel);
+//        tabbedPane.setSelectedIndex(tabIndex - 1);
     }
 
     private JTextArea createTextPanel() {
@@ -134,17 +142,19 @@ public class Teacher {
 
     public JPanel profilePanel()
     {
-        JTabbedPane tabbedPane = new JTabbedPane();
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         JPanel info = new JPanel(new BorderLayout(5, 5));
         JPanel titlePanel = new JPanel(new GridLayout(1, 2, 5, 5));
         JPanel infoPanel = new JPanel(new GridLayout(1, 2, 5, 5));
         JLabel name = new JLabel(" Username: ");
         JLabel pass = new JLabel(" Password: ");
-        titlePanel.add(name);
-        titlePanel.add(pass);
-        JTextField nameF = new JTextField();
-        JTextField passF = new JTextField();
+        Border border = BorderFactory.createLineBorder(Color.gray, 2);
+        JTextField nameF = new JTextField(username);
+        nameF.setBackground(Color.DARK_GRAY);
+        nameF.setBorder(border);
+        JTextField passF = new JTextField(getPass());
+        passF.setBackground(Color.DARK_GRAY);
+        passF.setBorder(border);
         nameF.setEnabled(false);
         passF.setEnabled(false);
         infoPanel.add(nameF);
@@ -157,6 +167,26 @@ public class Teacher {
         panel.add(tabbedPane, BorderLayout.CENTER);
 //        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         return panel;
+    }
+
+    public String getPass()
+    {
+        String  pass = null;
+        File file = new File(INFO_PATH+username+".txt");
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(file);
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+        int cnt = 0;
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if(cnt == 2)
+                pass = line;
+            cnt++;
+        }
+        return  pass;
     }
 
     public JPanel createClass()
@@ -268,8 +298,14 @@ public class Teacher {
                     FileUtils.fileWriter(daysNote, thisClassPath);
                     FileUtils.fileWriter(timesNote, thisClassPath);
                 }
+                if(!nameNote.isEmpty())
+                {
+                    String path = TEACHER_PATH + username + "\\";
+                    FileUtils.fileWriter(nameNote, path);
+                }
             }
         });
     }
+
 }
 
