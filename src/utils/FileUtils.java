@@ -10,7 +10,7 @@ public class FileUtils {
     public static void makeFolder(String folder)
     {
 //        File file = new File(folder);
-////        if(!file.exists())
+//        if(!file.exists())
 //            file.mkdirs();
         boolean isSuccessful = new File(folder).mkdirs();
         System.out.println("Creating " + folder + " directory is successful: " + isSuccessful);
@@ -28,7 +28,9 @@ public class FileUtils {
         } finally {
             try {
                 if (writer != null)
+                {
                     writer.close();
+                }
             } catch (IOException ex) {
                 ex.printStackTrace(System.err);
             }
@@ -70,5 +72,15 @@ public class FileUtils {
             return content;
         }
         return System.currentTimeMillis() + "_new file.txt";
+    }
+
+    public static boolean deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        return directoryToBeDeleted.delete();
     }
 }

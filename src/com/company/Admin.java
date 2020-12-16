@@ -6,6 +6,7 @@ import utils.FileUtils;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +16,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class Admin {
+public class Admin extends Person{
     private CFrame frame;
     private JMenuItem meals;
     private JMenuItem students;
@@ -24,10 +25,15 @@ public class Admin {
     private JMenuItem addStudent;
     private JMenuItem addTeacher;
     private String username;
+    private File files[];
+    JTabbedPane tabbedPane;
     private static final String INFO_PATH = "./user pass/";
     private static final String MEALS_PATH = "./meals/";
     private static final String STUDENTS_PATH = "./students/";
     private static final String TEACHERS_PATH = "./teachers/";
+    private static final String CLASSES_PATH = ".\\classes\\";
+    private JList<File> directoryList;
+    private JList<File> dicList;
 
     public Admin(String user)
     {
@@ -94,7 +100,7 @@ public class Admin {
         classes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addPanel("Classes",classesList());
+                frame.getMainPanel().addPanel("Classes",viewClasses());
             }
         });
     }
@@ -223,41 +229,107 @@ public class Admin {
         panel.add(frame.getMainPanel().setLabel(" Add new "+name,Color.PINK), BorderLayout.NORTH);
         panel.add(fieldsPanel, BorderLayout.CENTER);
         panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
-        savePerson(userF, passF, name);
+        savePerson(userF, passF, name, panel);
         return panel;
     }
 
     public JPanel showPeople(String name) throws FileNotFoundException {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
+        JTabbedPane tb = new JTabbedPane();
         panel.add((frame.getMainPanel().setLabel(name, Color.blue)), BorderLayout.NORTH);
         StringBuilder info = new StringBuilder();
-        File people[] = FileUtils.getFilesInDirectory(INFO_PATH);
-        JPanel names = new JPanel(new GridLayout(people.length,1));
-        int person = 0;
-        int cnt = 0;
-        while(person < people.length)
+//        JList<File> dicList;
+        File thisPeople[];
+        String path;
+        if(name.contains("teacher"))
         {
-            String user = null ;
-            Scanner scanner = new Scanner(people[person]);
-            cnt = 0;
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if(cnt == 0)
-                    user = line;
-                if(cnt == 1 && line.equals(name))
-                {
-                    info.delete(0,info.length());
-                    info.append(user);
-                    JTextField users = new JTextField(info.toString());
-                    names.add(users);
-                }
-                cnt++;
-            }
-            person++;
+            thisPeople = FileUtils.getFilesInDirectory(TEACHERS_PATH);
+            path = TEACHERS_PATH;
         }
+        else
+        {
+            thisPeople = FileUtils.getFilesInDirectory(STUDENTS_PATH);
+            path = STUDENTS_PATH;
+        }
+        dicList = new JList<>(thisPeople);
+        dicList = new JList<>();
+        dicList.setBackground(new Color(211, 211, 211));
+        dicList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        dicList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        dicList.setVisibleRowCount(-1);
+        dicList.setMinimumSize(new Dimension(130, 100));
+        dicList.setMaximumSize(new Dimension(130, 100));
+        dicList.setFixedCellWidth(130);
+        dicList.setCellRenderer(new MyCellRenderer());
+        tabbedPane = new JTabbedPane();
+        dicList.addMouseListener(new PeopleMouseAdapter(path, name));
 
-        panel.add(names, BorderLayout.CENTER);
+        dicList.setListData(thisPeople);
+        JScrollPane dicPanel = new JScrollPane(dicList);
+
+        panel.add(dicPanel, BorderLayout.WEST);
+        panel.add(tabbedPane, BorderLayout.CENTER);
+//        if(name.contains("teacher"))
+//        {
+//            Teacher teacher = new Teacher()
+//        }
+
         return  panel;
+    }
+    private class PeopleMouseAdapter extends MouseAdapter {
+        String p;
+        String name;
+//        JTabbedPane tb;
+        PeopleMouseAdapter(String path, String name)
+        {
+            this.p = path;
+            this.name = name;
+//            this.tb = tb;
+        }
+        @Override
+        public void mouseClicked(MouseEvent eve) {
+            // Double-click detected
+            if (eve.getClickCount() == 2) {
+                int index = dicList.locationToIndex(eve.getPoint());
+//                System.out.println("Item " + index + " is clicked...");
+                File curr[] = FileUtils.getFilesInDirectory(p);
+                File allFiles[] = FileUtils.getFilesInDirectory(curr[index].toString());
+////                viewClasses(files);
+                int cnt = 0;
+                String content = "";
+                while (cnt < allFiles.length)
+                {
+                    if(!(allFiles[cnt]).toString().contains("meal") && !(allFiles[cnt]).toString().contains("classes"))
+                        content += FileUtils.fileReader(allFiles[cnt]) + "\n";
+
+                    else if((allFiles[cnt]).toString().contains("classes"))
+                    {
+                        File classesName[] = FileUtils.getFilesInDirectory(allFiles[cnt].toString());
+                        int i = 0;
+                        content += "classes:\n";
+                        while (i < classesName.length)
+                        {
+                            content += FileUtils.fileReader(classesName[i]) + "\n";
+                            i++;
+                        }
+                    }
+                    else if((allFiles[cnt]).toString().contains("meal"))
+                    {
+                        File mealsName[] = FileUtils.getFilesInDirectory(allFiles[cnt].toString());
+                        int i = 0;
+                        content += "meals:\n";
+                        while (i < mealsName.length)
+                        {
+                            content += FileUtils.fileReader(mealsName[i]) + "\n";
+                            i++;
+                        }
+                    }
+                    cnt ++;
+                }
+                System.out.println(content);
+                openExistingNote(content, name);
+            }
+        }
     }
 
     public JPanel classesList()
@@ -342,7 +414,108 @@ public class Admin {
         return panel;
     }
 
-    public void savePerson(JTextField user, JTextField pass, String name) {
+    private JScrollPane initDirectoryList() {
+        File[] files = FileUtils.getFilesInDirectory(CLASSES_PATH);
+        System.out.println(files.length);
+        directoryList = new JList<>(files);
+        directoryList = new JList<>();
+
+        directoryList.setBackground(new Color(211, 211, 211));
+        directoryList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        directoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        directoryList.setVisibleRowCount(-1);
+        directoryList.setMinimumSize(new Dimension(130, 100));
+        directoryList.setMaximumSize(new Dimension(130, 100));
+        directoryList.setFixedCellWidth(130);
+        directoryList.setCellRenderer(new MyCellRenderer());
+        tabbedPane = new JTabbedPane();
+        directoryList.addMouseListener(new MyMouseAdapter());
+
+        directoryList.setListData(files);
+
+        JScrollPane panel = new JScrollPane(directoryList);
+        return panel;
+    }
+    private class MyCellRenderer extends DefaultListCellRenderer {
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object object, int index, boolean isSelected, boolean cellHasFocus) {
+            if (object instanceof File) {
+                File file = (File) object;
+                setText(file.getName());
+                setIcon(FileSystemView.getFileSystemView().getSystemIcon(file));
+                if (isSelected) {
+                    setBackground(list.getSelectionBackground());
+                    setForeground(list.getSelectionForeground());
+                } else {
+                    setBackground(list.getBackground());
+                    setForeground(list.getForeground());
+                }
+                setEnabled(list.isEnabled());
+            }
+            return this;
+        }
+    }
+    private class MyMouseAdapter extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent eve) {
+            // Double-click detected
+            if (eve.getClickCount() == 2) {
+                int index = directoryList.locationToIndex(eve.getPoint());
+//                System.out.println("Item " + index + " is clicked...");
+                File curr[] = FileUtils.getFilesInDirectory(CLASSES_PATH);
+                files = FileUtils.getFilesInDirectory(curr[index].toString());
+//                viewClasses(files);
+                int cnt = 0;
+                String content = "class\n";
+                while (cnt < files.length)
+                {
+                    if(!FileUtils.fileReader(files[cnt]).toString().contains("name"))
+                        content += FileUtils.fileReader(files[cnt]) + "\n";
+                    cnt ++;
+                }
+                openExistingNote(content ,"class");
+            }
+        }
+    }
+
+    public void show(String path)
+    {
+//        directoryList.setCellRenderer(MyCellRenderer());
+//        directoryList.addMouseListener(new MyMouseAdapter());
+
+    }
+
+    public void openExistingNote(String content, String title) {
+        JPanel panel = new JPanel(new BorderLayout(5,5));
+//        JButton select = new JButton("Select");
+        JTextArea existPanel = createTextPanel();
+        existPanel.setText(content);
+        panel.add(existPanel, BorderLayout.CENTER);
+//        panel.add(select, BorderLayout.SOUTH);
+        int tabIndex = tabbedPane.getTabCount() + 1;
+        tabbedPane.addTab(title+" " + (tabbedPane.getTabCount() + 1), panel);
+        tabbedPane.setSelectedIndex(tabIndex - 1);
+    }
+    private JTextArea createTextPanel() {
+        JTextArea textPanel = new JTextArea();
+        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        return textPanel;
+    }
+    public JPanel viewClasses()
+    {
+        JPanel panel = new JPanel(new BorderLayout(1,2));
+//        JButton select = new JButton("Select");
+        panel.add(frame.getMainPanel().setLabel("Classes list", Color.white), BorderLayout.NORTH);
+        panel.add(initDirectoryList(), BorderLayout.WEST);
+        panel.add(tabbedPane, BorderLayout.CENTER);
+
+//        panel.add(select, BorderLayout.SOUTH);
+        return panel;
+    }
+
+    public void savePerson(JTextField user, JTextField pass, String name, JPanel panel) {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -353,25 +526,37 @@ public class Admin {
                 System.out.println(note_pass);
                 System.out.println(note);
                 if (!note_pass.isEmpty() && !note_user.isEmpty()) {
-                    boolean isSuccessful = new File(INFO_PATH).mkdirs();
-                    System.out.println("Creating " + INFO_PATH + " directory is successful: " + isSuccessful);
-                    FileUtils.fileWriter(note, INFO_PATH);
-                    if(name.equals("student"))
+                    if(frame.getMainPanel().checkUsername(note_user, panel) &&
+                    frame.getMainPanel().checkPass(note_pass, panel))
                     {
-                        String average = "average\n0";
-                        String budget = "budget\n0";
-                        String unit = "unit\n0";
-                        String path = STUDENTS_PATH+note_user+"/";
-                        FileUtils.makeFolder(path);
-                        FileUtils.fileWriter(average,path);
-                        FileUtils.fileWriter(budget,path);
-                        FileUtils.fileWriter(unit,path);
+                        boolean isSuccessful = new File(INFO_PATH).mkdirs();
+                        System.out.println("Creating " + INFO_PATH + " directory is successful: " + isSuccessful);
+                        FileUtils.fileWriter(note, INFO_PATH);
+                        if(name.equals("student"))
+                        {
+                            String average = "average\n0";
+                            String passedUnit = "passed unit\n0";
+                            String budget = "budget\n0";
+                            String unit = "unit\n0";
+                            String password = "pass\n" + note_pass;
+                            String path = STUDENTS_PATH+note_user+"/";
+                            FileUtils.makeFolder(path);
+                            FileUtils.fileWriter(average,path);
+                            FileUtils.fileWriter(budget,path);
+                            FileUtils.fileWriter(unit,path);
+                            FileUtils.fileWriter(password,path);
+                            FileUtils.fileWriter(passedUnit, path);
+                            FileUtils.makeFolder(path+"classes");
+                        }
+                        else if(name.equals("teacher"))
+                        {
+                            String path = TEACHERS_PATH+note_user+"/";
+                            String password = "pass\n" + note_pass;
+                            FileUtils.makeFolder(path);
+                            FileUtils.fileWriter(password,path);
+                        }
                     }
-                    else if(name.equals("teacher"))
-                    {
-                        String path = TEACHERS_PATH+note_user+"/";
-                        FileUtils.makeFolder(path);
-                    }
+
                 }
             }
         });

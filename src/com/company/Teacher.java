@@ -13,18 +13,21 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Teacher {
     private CFrame frame;
     private JMenuItem newClass;
     private JMenuItem students;
+    private JMenuItem setGrade;
     private JList<File> directoryList;
     private String username;
     private static final String CLASSES_PATH = ".\\classes\\";
     private static final String TEACHER_PATH = ".\\teachers\\";
     private static final String INFO_PATH = ".\\user pass\\";
-    JTabbedPane tabbedPane = new JTabbedPane();
+    private static final String STUDENTS_PATH = "./students/";
+    JTabbedPane tabbedPane ;
 
     public Teacher(String user)
     {
@@ -42,6 +45,7 @@ public class Teacher {
 
         newClass = frame.addToMenu("New class");
         students = frame.addToMenu("Students");
+        setGrade = frame.addToMenu("Set Grades");
     }
 
     private void addToTab()
@@ -58,7 +62,12 @@ public class Teacher {
                 frame.getMainPanel().addSpecificTab("Students","STUDENTS:");
             }
         });
-
+        setGrade.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.getMainPanel().addPanel("Grade",setGrades());
+            }
+        });
     }
 
 //    private void initTabbedPane() {
@@ -139,6 +148,141 @@ public class Teacher {
         return textPanel;
     }
 
+    public JPanel setGrades()
+    {
+        String path = TEACHER_PATH + username;
+        File className[] = FileUtils.getFilesInDirectory(path);
+        JPanel mainPanel = new JPanel(new BorderLayout(5,5));
+        JPanel panel = new JPanel(new GridLayout(className.length, 4));
+        JPanel titlePanel = new JPanel(new GridLayout(1,4));
+        JTextField label1 = new JTextField("name");
+        label1.setBackground(Color.YELLOW);
+        label1.setEditable(false);
+        JTextField label2 = new JTextField("course title");
+        label2.setBackground(Color.orange);
+        label2.setEditable(false);
+        JTextField label3 = new JTextField("grade");
+        label3.setBackground(Color.red);
+        label3.setEditable(false);
+        JTextField label4 = new JTextField("OK");
+        label4.setEditable(false);
+        label4.setBackground(Color.GREEN);
+        titlePanel.add(label1);
+        titlePanel.add(label2);
+        titlePanel.add(label3);
+        titlePanel.add(label4);
+
+        int cnt = 0;
+        while (cnt < className.length)
+        {
+            String title = "";
+            if(!className[cnt].toString().contains("pass.txt"))
+            {
+                System.out.println(className[cnt].toString());
+                Scanner scanner = null;
+                try {
+                    scanner = new Scanner(className[cnt]);
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+                int counter = 0;
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    if(counter == 0)
+                    {
+                        title = line;
+                    }
+                    if(counter != 0)
+                    {
+                        JTextField names = new JTextField(line);
+                        names.setBackground(Color.lightGray);
+                        JTextField titleF = new JTextField(title);
+                        titleF.setEditable(false);
+                        names.setEditable(false);
+                        JTextField grade = new JTextField();
+                        JButton ok = new JButton("OK");
+                        panel.add(names);
+                        panel.add(titleF);
+                        panel.add(grade);
+                        panel.add(ok);
+                        saveGrade(names, titleF, grade, ok);
+                    }
+                    counter++;
+                }
+            }
+            cnt++;
+        }
+        mainPanel.add(titlePanel, BorderLayout.NORTH);
+        mainPanel.add(panel, BorderLayout.CENTER);
+        return mainPanel;
+    }
+    public void saveGrade(JTextField name,JTextField course, JTextField grade, JButton ok)
+    {
+        ok.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String gradeNote = grade.getText();
+                String nameNote = name.getText();
+                String courseNote = course.getText();
+                Float gradeNum = Float.parseFloat(gradeNote);
+                int courseUnit = 0;
+                File unitFile = new File(CLASSES_PATH + courseNote + "\\unit.txt");
+                Scanner scanner = null;
+                try {
+                    scanner = new Scanner(unitFile);
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+                int cnt = 0;
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    if(cnt == 1)
+                        courseUnit = Integer.parseInt(line);
+                    cnt++;
+                }
+                int passedUnit = 0;
+                float average = 0;
+                float res = 0;
+                for(int i = 0; i<2 ; i++)
+                {
+                    String str;
+                    if(i == 0)
+                        str = "average";
+                    else
+                        str = "passed unit";
+                    String path = STUDENTS_PATH+nameNote+"/"+str+".txt";
+                    File averageFile = new File(path);
+                    Scanner scanner1 = null;
+                    try {
+                        scanner1 = new Scanner(averageFile);
+                    } catch (FileNotFoundException fileNotFoundException) {
+                        fileNotFoundException.printStackTrace();
+                    }
+                    int c = 0;
+                    while (scanner1.hasNextLine()) {
+                        String line = scanner1.nextLine();
+                        if(c == 1)
+                        {
+                            if(i == 0)
+                                average = Float.parseFloat(line);
+                            else
+                                passedUnit = Integer.parseInt(line);
+                        }
+                        c++;
+                    }
+                }
+                String path = STUDENTS_PATH + nameNote + "/";
+                average = (average*passedUnit + gradeNum*courseUnit)/(passedUnit+courseUnit);
+                passedUnit += courseUnit;
+                String avg = "average\n" + average;
+                FileUtils.fileWriter(avg, path);
+
+                String pu = "passed unit\n" + passedUnit;
+                FileUtils.fileWriter(pu, path);
+
+            }
+        });
+    }
     public JPanel profilePanel()
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -162,6 +306,7 @@ public class Teacher {
         info.add(infoPanel, BorderLayout.CENTER);
         panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(160, 50, 100)), BorderLayout.NORTH);
         panel.add(initDirectoryList(), BorderLayout.WEST);
+        tabbedPane = new JTabbedPane();
         tabbedPane.add(info,"Username and Password");
         panel.add(tabbedPane, BorderLayout.CENTER);
 //        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
@@ -303,6 +448,7 @@ public class Teacher {
                 {
                     String path = TEACHER_PATH + username + "\\";
                     FileUtils.fileWriter(nameNote, path);
+                    System.out.println(nameNote);
                 }
             }
         });

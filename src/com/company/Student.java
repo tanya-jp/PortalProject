@@ -27,7 +27,7 @@ public class Student {
     private static final String CLASSES_PATH = ".\\classes\\";
     private static final String TEACHER_PATH = ".\\teachers\\";
     private String username;
-    private int money;
+    private float money;
     JTabbedPane tabbedPane = new JTabbedPane();
     private File files[];
     JButton select = new JButton("Select");
@@ -159,6 +159,10 @@ public class Student {
     }
 
     public JPanel setMeals() throws FileNotFoundException {
+        if(getAverage() >= 17)
+        {
+            JOptionPane.showMessageDialog(frame, "YOU CAN BUY 50% CHEAPER!", "notification", JOptionPane.INFORMATION_MESSAGE);
+        }
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -320,7 +324,6 @@ public class Student {
         JTextField averageF = new JTextField(String.valueOf(getAverage()));
         averageF.setBackground(Color.DARK_GRAY);
         averageF.setBorder(border);
-        JTextField classesF = new JTextField();
 
         infoPanel.add(name);
         infoPanel.add(nameF);
@@ -340,10 +343,21 @@ public class Student {
         passF.setEnabled(false);
         budgetF.setEnabled(false);
         averageF.setEnabled(false);
-        classesF.setEnabled(false);
+
+        String classPath = STUDENTS_PATH + username + "/classes/";
+        File[] classFile = FileUtils.getFilesInDirectory(classPath);
+        JList classList = new JList<>(classFile);
+        classList = new JList<>();
+
+        classList.setVisibleRowCount(-1);
+        classList.setCellRenderer(new MyCellRenderer());
+
+        classList.setListData(classFile);
+
+        JScrollPane classF = new JScrollPane(classList);
 
         info.add(infoPanel, BorderLayout.NORTH);
-        info.add(classesF, BorderLayout.CENTER);
+        info.add(classF, BorderLayout.CENTER);
         panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(248, 56, 155)), BorderLayout.NORTH);
         panel.add(info, BorderLayout.CENTER);
         return panel;
@@ -354,9 +368,9 @@ public class Student {
         String path = STUDENTS_PATH+username+"/"+str+".txt";
         return path;
     }
-    public int getBudget()
+    public float getBudget()
     {
-        int budget = 0;
+        float budget = 0;
         File budgetFile = new File(getPath("budget"));
         Scanner scanner = null;
         try {
@@ -368,7 +382,7 @@ public class Student {
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             if(cnt == 1)
-                budget = Integer.parseInt(line);
+                budget = Float.parseFloat(line);
             cnt++;
         }
         return  budget;
@@ -411,9 +425,9 @@ public class Student {
         }
         return  pass;
     }
-    public int getAverage()
+    public float getAverage()
     {
-        int average = 0;
+        float average = 0;
         File averageFile = new File(getPath("average"));
         Scanner scanner = null;
         try {
@@ -424,11 +438,30 @@ public class Student {
         int cnt = 0;
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            if(cnt == 2)
-                average = Integer.parseInt(line);
+            if(cnt == 1)
+                average = Float.parseFloat(line);
             cnt++;
         }
         return  average;
+    }
+    public int getPassedUnit()
+    {
+        int passed = 0;
+        File passedFile = new File(getPath("passed unit"));
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(passedFile);
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+        int cnt = 0;
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if(cnt == 1)
+                passed = Integer.parseInt(line);
+            cnt++;
+        }
+        return  passed;
     }
     public void charge( JTextField amount)
     {
@@ -436,7 +469,7 @@ public class Student {
             @Override
             public void mouseClicked(MouseEvent e) {
                 String amountNote = amount.getText();
-                int budget = getBudget();
+                float budget = getBudget();
                 budget += Integer.parseInt(amountNote);
                 money = budget;
                 String note = "budget\n" + budget;
@@ -470,14 +503,13 @@ public class Student {
         select.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println("******");
                 int cnt = 0;
                 String content = "class\n";
                 String teacher = null;
                 String title = null;
                 while (cnt < files.length)
                 {
-                    content += FileUtils.fileReader(files[cnt]) + "\n";
+//                    content += FileUtils.fileReader(files[cnt]) + "\n";
                     System.out.println(files[cnt]);
                     if(files[cnt].toString().contains("unit"))
                     {
@@ -510,7 +542,6 @@ public class Student {
                             String unitNote = "unit\n"+String.valueOf(unit);
                             String path = STUDENTS_PATH+username+"/";
                             FileUtils.fileWriter(unitNote,path);
-                            JOptionPane.showMessageDialog(frame, "Successful!", "Result", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
                     else if(files[cnt].toString().contains("teacher"))
@@ -548,32 +579,69 @@ public class Student {
                     }
                     cnt ++;
                 }
+                System.out.println(title);
+
                 if(!title.equals(null) && !teacher.equals(null))
                 {
                     int flag = 0;
                     String students = "";
-                    String path = TEACHER_PATH + teacher + "\\";
+                    String path = TEACHER_PATH + teacher + "\\" ;
                     File className[] = FileUtils.getFilesInDirectory(path);
                     int counter = 0;
+                    int classNumber = 0;
                     while (counter < className.length)
                     {
-                        Scanner scanner = null;
+                        if(className[counter].toString().contains(title))
+                        {
+                            Scanner scanner = null;
+                            try {
+                                scanner = new Scanner(className[counter]);
+                            } catch (FileNotFoundException fileNotFoundException) {
+                                fileNotFoundException.printStackTrace();
+                            }
+                            while (scanner.hasNextLine()) {
+
+                                String line = scanner.nextLine();
+                                students = students + line + "\n";
+                                System.out.println(students);
+                                if(line.equals(username))
+                                {
+                                    JOptionPane.showMessageDialog(frame, "You have chosen this class!", "Error!", JOptionPane.ERROR_MESSAGE);
+                                    flag++;
+                                }
+                            }
+                        }
+                        counter++;
+                    }
+                    String capacityPath = CLASSES_PATH+title+"/capacity.txt";
+                    int capacity = 0;
+                    File capacityFile = new File(capacityPath);
+                    Scanner scanner1 = null;
                     try {
-                        scanner = new Scanner(className[counter]);
+                        scanner1 = new Scanner(capacityFile);
                     } catch (FileNotFoundException fileNotFoundException) {
                         fileNotFoundException.printStackTrace();
                     }
-                    while (scanner.hasNextLine()) {
-
-                        String line = scanner.nextLine();
-                        students += line + "\n";
-                        if(line.equals(username))
+                    int c = 0;
+                    while (scanner1.hasNextLine()) {
+                        String line = scanner1.nextLine();
+                        if(c == 1)
                         {
-                            JOptionPane.showMessageDialog(frame, "You have chosen this class!", "Error!", JOptionPane.ERROR_MESSAGE);
-                            flag++;
+
+                            capacity = Integer.parseInt(line);
                         }
+                        c++;
                     }
-                        counter++;
+                    if(capacity == 0)
+                    {
+                        flag++;
+                        JOptionPane.showMessageDialog(frame, "THIS CLASS IS FULL!", "Error!", JOptionPane.ERROR_MESSAGE);
+                    }
+                    else
+                    {
+                        String cp = "capacity\n" + (capacity -1 );
+                        String p = CLASSES_PATH + title +"\\";
+                        FileUtils.fileWriter(cp, p);
                     }
                     if(flag == 0)
                     {
@@ -581,6 +649,12 @@ public class Student {
                         System.out.println(students);
                         FileUtils.fileWriter(students, TEACHER_PATH + teacher + "\\");
                         JOptionPane.showMessageDialog(frame, "Successful!", "Result", JOptionPane.INFORMATION_MESSAGE);
+                        if(title != null)
+                        {
+                            String classPath = STUDENTS_PATH + username + "/classes/";
+//                            boolean isSuccessful = new File(STUDENTS_PATH + username + "\\classes").mkdirs();
+                            FileUtils.fileWriter(title, classPath);
+                        }
                     }
                 }
 //                System.out.println(content);
@@ -599,13 +673,23 @@ public class Student {
                     FileUtils.makeFolder(path);
                     String mealNote = meals.getSelectedItem().toString();
                     String[] arrOfStr = mealNote.split("     ", 5);
-                    if (getBudget() < Integer.parseInt(arrOfStr[1])) {
+                    if (getBudget() < Float.parseFloat(arrOfStr[1])/2 ) {
                         JOptionPane.showMessageDialog(frame, "not enough!", "Result", JOptionPane.ERROR_MESSAGE);
-                    } else {
+                    }
+                    else if(getBudget() < Float.parseFloat(arrOfStr[1]) && getAverage()<17) {
+                        JOptionPane.showMessageDialog(frame, "not enough!", "Result", JOptionPane.ERROR_MESSAGE);
+                    }
+                    else {
                         String note = dayNote + "\n" + mealNote;
                         FileUtils.fileWriter(note, path);
                         System.out.println(note);
-                        String budgetNote = "budget\n" + (getBudget() - Integer.parseInt(arrOfStr[1]));
+                        float price = 0;
+                        if(getAverage() >= 17)
+                            price = Float.parseFloat(arrOfStr[1])/2;
+                        else
+                            price = Float.parseFloat(arrOfStr[1]);
+                        System.out.println(price);
+                        String budgetNote = "budget\n" + (getBudget() - price);
                         boolean isSuccessful = new File(getPath("budget")).mkdirs();
                         System.out.println("Creating " + getPath("budget") + " directory is successful: " + isSuccessful);
                         FileUtils.fileWriter(budgetNote, STUDENTS_PATH + username + "/");

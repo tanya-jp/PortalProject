@@ -43,30 +43,6 @@ public class CMainPanel extends JPanel {
         add(tabbedPane, BorderLayout.CENTER);
     }
 
-    public JTextArea makeTextPanel()
-    {
-        return createTextPanel();
-    }
-
-//    public void addNewTab() {
-//        JTextArea textPanel = createTextPanel();
-//        if(tabbedPane.getTabCount() == 0)
-//        {
-//            textPanel.setText("Username: \nPassword: ");
-//            tabbedPane.addTab("PROFILE",textPanel);
-//        }
-//        else
-//        {
-//            textPanel.setText("Write Something here...");
-//            tabbedPane.addTab("Tab " + (tabbedPane.getTabCount() + 1), textPanel);
-//        }
-//    }
-//
-//    public JPanel makeJPanel()
-//    {
-//        JPanel panel = new JPanel(new BorderLayout(5, 5));
-//        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-//    }
 
     public JLabel setLabel(String labelStr,Color color)
     {
@@ -111,12 +87,8 @@ public class CMainPanel extends JPanel {
 
         JLabel curr = new JLabel(" your current "+str+": ");
         JLabel newOne = new JLabel(" new "+str+": ");
-//        JLabel currPass = new JLabel(" current password: ");
-//        JLabel newPass = new JLabel(" new password: ");
         JTextField currF = new JTextField();
         JTextField newF = new JTextField();
-//        JPasswordField currPassF = new JPasswordField();
-//        JPasswordField newPassF = new JPasswordField();
 
         JPanel labelPanel = new JPanel(new GridLayout(2, 1, 5, 5));
         JPanel fieldsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
@@ -126,18 +98,13 @@ public class CMainPanel extends JPanel {
         labelPanel.add(newOne);
         fieldsPanel.add(newF);
 
-//        labelPanel.add(currPass);
-//        fieldsPanel.add(currPassF);
-//
-//        labelPanel.add(newPass);
-//        fieldsPanel.add(newPassF);
-
         panel.add(setLabel(" Change "+str, Color.getHSBColor(178, 222, 251)), BorderLayout.NORTH);
         panel.add(fieldsPanel, BorderLayout.CENTER);
         panel.add(labelPanel, BorderLayout.WEST);
         panel.add(setButtons(), BorderLayout.SOUTH);
         addPanel("Change "+str,panel);
-        setNewUsername(currF,newF);
+        if(str.equals("user"))
+            setNewUsername(currF,newF, panel);
         return panel;
     }
 
@@ -160,55 +127,53 @@ public class CMainPanel extends JPanel {
         return textPanel;
     }
 
-    public void setNewUsername(JTextField curr, JTextField newUsername)
+    public void setNewUsername(JTextField curr, JTextField newUsername ,JPanel panel)
     {
         submit.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 String currText = curr.getText();
                 String newUsernameText = newUsername.getText();
-//                System.out.println(INFO_PATH+currText+" .txt/");
                 File userPasses[] = FileUtils.getFilesInDirectory(INFO_PATH);
                 int cnt = 0;
                 String name = null;
                 String pass = null;
-//                System.out.println(userPasses[1]);
-                while (cnt < userPasses.length)
-                {
-                    int lineCnt = 0;
-                    System.out.println(String.valueOf(userPasses[cnt]));
-                    if(String.valueOf(userPasses[cnt]).contains("\\user pass\\"+currText+".txt"))
-                    {
-                        Scanner scanner = null;
-                        try {
-                            scanner = new Scanner(userPasses[cnt]);
-                        } catch (FileNotFoundException fileNotFoundException) {
-                            fileNotFoundException.printStackTrace();
-                        }
-                        while (scanner.hasNextLine()) {
-                            String line = scanner.nextLine();
-                            if(lineCnt == 1)
-                                name = line;
-                            else if(lineCnt == 2)
-                                pass = line;
-                            lineCnt++;
-                        }
+                checkUsername(newUsernameText, panel);
 
-                    }
-                    cnt++;
-                }
-                String note = newUsernameText + "\n" + name + "\n" + pass;
-                if ((!currText.isEmpty() && !newUsernameText.isEmpty()))
-                  {
-                    boolean isSuccessful = new File(INFO_PATH).mkdirs();
-                    System.out.println("Creating " + INFO_PATH + " directory is successful: " + isSuccessful);
-                    FileUtils.fileWriter(note, INFO_PATH);
-                    System.out.println(note);
-                }
-                System.out.println(note);
             }
         });
     }
 
+    public boolean checkUsername(String newUsernameText, JPanel panel)
+    {
+        File userPasses[] = FileUtils.getFilesInDirectory(INFO_PATH);
+        int cnt = 0;
+        int flag = 0;
+        while (cnt < userPasses.length)
+        {
+            if((String.valueOf(userPasses[cnt]).contains("\\"+newUsernameText+".txt")))
+            {
+                JOptionPane.showMessageDialog(panel, "Invalid username!", "Result", JOptionPane.ERROR_MESSAGE);
+                flag++;
+            }
+            cnt++;
+        }
+        if(flag > 0)
+            return false;
+        else
+            return true;
+    }
 
+    public boolean checkPass(String newPass, JPanel panel)
+    {
+        if(newPass.length()<8)
+        {
+            JOptionPane.showMessageDialog(panel, "Password should be more than 8 characters!", "Result", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        else
+            return true;
+    }
 }
+
+
