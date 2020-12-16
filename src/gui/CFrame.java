@@ -116,12 +116,12 @@ public class CFrame extends JFrame implements ActionListener{
             else if(e.getSource() == user)
             {
 //                mainPanel.addSpecificTab(e.getActionCommand(),null);
-                mainPanel.addChangeUserPassTab("user");
+                mainPanel.addChangeUserPassTab("user", getTitle());
             }
             else if(e.getSource() == pass)
             {
 //                mainPanel.addSpecificTab(e.getActionCommand(),null);
-                mainPanel.addChangeUserPassTab("pass");
+                mainPanel.addChangeUserPassTab("pass",getTitle());
             }
         }
 

@@ -5,21 +5,12 @@ import utils.FileUtils;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Scanner;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 
 public class CMainPanel extends JPanel {
@@ -35,7 +26,6 @@ public class CMainPanel extends JPanel {
 
         initTabbedPane(); // add TabbedPane to main panel
 
-//        addNewTab(); // open new empty tab when user open the application
     }
 
     private void initTabbedPane() {
@@ -80,7 +70,7 @@ public class CMainPanel extends JPanel {
     }
 
 
-    public JPanel addChangeUserPassTab(String str)
+    public JPanel addChangeUserPassTab(String str, String username)
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -105,6 +95,8 @@ public class CMainPanel extends JPanel {
         addPanel("Change "+str,panel);
         if(str.equals("user"))
             setNewUsername(currF,newF, panel);
+        else
+            setNewPass(currF, newF, panel, username);
         return panel;
     }
 
@@ -125,6 +117,62 @@ public class CMainPanel extends JPanel {
         JTextArea textPanel = new JTextArea();
         textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         return textPanel;
+    }
+
+    public void setNewPass(JTextField curr, JTextField newPass ,JPanel panel, String user)
+    {
+        submit.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String currPass = curr.getText();
+                String newPassText = newPass.getText();
+                String position = "";
+                int flag = 0;
+                File userPasses[] = FileUtils.getFilesInDirectory(INFO_PATH);
+                if (checkPass(newPassText, panel))
+                {
+                    int cnt = 0;
+                    while (cnt < userPasses.length)
+                    {
+                        if((String.valueOf(userPasses[cnt]).contains("\\"+user+".txt")))
+                        {
+                            Scanner scanner = null;
+                            try {
+                                scanner = new Scanner(userPasses[cnt]);
+                            } catch (FileNotFoundException fileNotFoundException) {
+                                fileNotFoundException.printStackTrace();
+                            }
+                            int counter = 0;
+                            while (scanner.hasNextLine()) {
+                                String line = scanner.nextLine();
+                                if(counter == 2)
+                                {
+                                    if(!line.equals(currPass))
+                                    {
+                                        JOptionPane.showMessageDialog(panel, "Incorrect pass!", "Result",
+                                                JOptionPane.ERROR_MESSAGE);
+                                        flag ++;
+                                    }
+
+                                }
+                                if (counter == 1)
+                                    position = line;
+                                counter++;
+                            }
+                        }
+                        cnt++;
+                    }
+                    if(flag == 0)
+                    {
+                        String note = user + "\n" + position + "\n" + newPassText;
+                        FileUtils.fileWriter(note, INFO_PATH);
+                        JOptionPane.showMessageDialog(panel, "Changed!", "Result",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+
+            }
+        });
     }
 
     public void setNewUsername(JTextField curr, JTextField newUsername ,JPanel panel)
