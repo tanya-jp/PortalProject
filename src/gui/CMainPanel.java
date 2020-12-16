@@ -1,4 +1,9 @@
 package gui;
+/**
+ * This class creates main panel and sets everything which is common
+ * @author Tanya Djavaherpour
+ * @version 1.0 2020
+ */
 
 import utils.FileUtils;
 
@@ -20,6 +25,9 @@ public class CMainPanel extends JPanel {
     private JButton cancel;
     private static final String INFO_PATH = "./user pass/";
 
+    /**
+     * Creates panel and adds initial things and sets layout
+     */
     public CMainPanel() {
 
         setLayout(new BorderLayout());
@@ -28,12 +36,20 @@ public class CMainPanel extends JPanel {
 
     }
 
+    /**
+     * Sets tabbedPane. New tab will be added to this tabbedPane whenever a new item is selected.
+     */
     private void initTabbedPane() {
         tabbedPane = new JTabbedPane();
         add(tabbedPane, BorderLayout.CENTER);
     }
 
-
+    /**
+     * Sets label to tab.
+     * @param labelStr as string that should be shown as label
+     * @param color as color of the label
+     * @return JLabel of created label
+     */
     public JLabel setLabel(String labelStr,Color color)
     {
         JLabel label = new JLabel(labelStr);
@@ -48,6 +64,10 @@ public class CMainPanel extends JPanel {
         return label;
     }
 
+    /**
+     * Sets submit and cancel butmn to tabs.
+     * @return buttonPanel which is a panel with submit and cancel buttons
+     */
     public JPanel setButtons()
     {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 5, 5));
@@ -64,12 +84,21 @@ public class CMainPanel extends JPanel {
         return buttonPanel;
     }
 
+    /**
+     * Gets submit button
+     * @return submit
+     */
     public JButton getSubmit()
     {
         return submit;
     }
 
-
+    /**
+     * By using this panel, people can change their username or password
+     * @param str as thing that should be changed. THis can be user or pass
+     * @param username as username of the person who wants to change their information
+     * @return a JPanel as panel of changing username or password.
+     */
     public JPanel addChangeUserPassTab(String str, String username)
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -100,7 +129,11 @@ public class CMainPanel extends JPanel {
         return panel;
     }
 
-
+    /**
+     * Adds specific tab to tabbedPane.
+     * @param name as title of new tab.
+     * @param text as text that should be shown in the tab.
+     */
     public void addSpecificTab(String name, String text)
     {
         JTextArea textPanel = createTextPanel();
@@ -108,17 +141,33 @@ public class CMainPanel extends JPanel {
         tabbedPane.addTab(name,textPanel);
     }
 
+    /**
+     * Adds panel to the tabbedPane.
+     * @param name as title of new tab.
+     * @param panel as new panel that should be added to the tabbedPane.
+     */
     public void addPanel(String name, JPanel panel)
     {
         tabbedPane.addTab(name, panel);
     }
 
+    /**
+     * Creates new text area and sets its border.
+     * @return created text panel
+     */
     private JTextArea createTextPanel() {
         JTextArea textPanel = new JTextArea();
         textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         return textPanel;
     }
 
+    /**
+     * When people wants to change their password, if it is possible this class changes it after they click submit button.
+     * @param curr as current password to check if it is correct
+     * @param newPass as new wanted password to check if it's length is more than 8 and then change it.
+     * @param panel as panel that tabs are shown to show warning in the case needed.
+     * @param user as usernamwe of the person who wants to change their password.
+     */
     public void setNewPass(JTextField curr, JTextField newPass ,JPanel panel, String user)
     {
         submit.addMouseListener(new MouseAdapter() {
@@ -174,7 +223,12 @@ public class CMainPanel extends JPanel {
             }
         });
     }
-
+    /**
+     * When people wants to change their username, if it is possible this class changes it after they click submit button.
+     * @param curr as current username.
+     * @param newUsername as new wanted username to check if it's available then change it.
+     * @param panel as panel that tabs are shown to show warning in the case needed.
+     */
     public void setNewUsername(JTextField curr, JTextField newUsername ,JPanel panel)
     {
         submit.addMouseListener(new MouseAdapter() {
@@ -192,6 +246,12 @@ public class CMainPanel extends JPanel {
         });
     }
 
+    /**
+     * Checks if wanted username is available
+     * @param newUsernameText as new wanted username to check if it's available then change it.
+     * @param panel as panel that tabs are shown to show warning in the case needed.
+     * @return true if wanted username is available, false when it has been saved before and is not available
+     */
     public boolean checkUsername(String newUsernameText, JPanel panel)
     {
         File userPasses[] = FileUtils.getFilesInDirectory(INFO_PATH);
@@ -212,6 +272,12 @@ public class CMainPanel extends JPanel {
             return true;
     }
 
+    /**
+     * Checks if new wanted password is acceptable
+     * @param newPass as new wanted pass to check if its length more than 8 then change it.
+     * @param panel as panel that tabs are shown to show warning in the case needed.
+     * @return true if wanted password is acceptable and false when it is not.
+     */
     public boolean checkPass(String newPass, JPanel panel)
     {
         if(newPass.length()<8)

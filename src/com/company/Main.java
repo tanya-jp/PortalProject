@@ -13,7 +13,7 @@ public class Main {
 //        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //        Admin admin = new Admin();
 //        Student student = new Student();
-        LoginForm loginForm = new LoginForm("log");
+        LoginForm loginForm = new LoginForm();
         loginForm.showGUI();
 //        String str = "salam    1";
 //        String[] arrOfStr = str.split(" ", 5);

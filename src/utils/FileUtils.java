@@ -4,17 +4,28 @@ import java.io.*;
 
 public class FileUtils {
 
+    /**
+     * Makes a file of all files in the path
+     * @param path as path of wanted files
+     * @return all files
+     */
     public static File[] getFilesInDirectory(String path) {
         return new File(path).listFiles();
     }
+
+    /**
+     * Makes new folder.
+     * @param folder as path that folder should be created there
+     */
     public static void makeFolder(String folder)
     {
-//        File file = new File(folder);
-//        if(!file.exists())
-//            file.mkdirs();
         boolean isSuccessful = new File(folder).mkdirs();
         System.out.println("Creating " + folder + " directory is successful: " + isSuccessful);
     }
+    /**
+     * Write on a file using BufferedWriter
+     * @param content String of content to be written on a file
+     */
     public static void fileWriter(String content,String p) {
         String fileName = getProperFileName(content);
         File newFile = new File(p+fileName+".txt");
@@ -36,7 +47,11 @@ public class FileUtils {
             }
         }
     }
-
+    /**
+     * Read from files using Buffered reader
+     * @param file File to be read
+     * @return String of all the file content
+     */
     public static String fileReader(File file) {
         String string = "";
         BufferedReader reader = null;
@@ -63,6 +78,11 @@ public class FileUtils {
         return string;
     }
 
+    /**
+     * Gets proper name to the file, this name is first line of the content of the text.
+     * @param content as conts that should be saved in the file
+     * @return proper name for the file(proper name is first line of the text)
+     */
      public static String getProperFileName(String content) {
         int loc = content.indexOf("\n");
         if (loc != -1) {

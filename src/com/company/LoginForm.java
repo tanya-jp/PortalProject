@@ -1,6 +1,12 @@
 package com.company;
+/**
+ * This class creates login panel and checks username and password, then if they were correct checks who is that
+ * person(admin, student or teacher). Then creates new person.
+ * Whenever a person logs out this class will be run.
+ * @author Tanya Djavaherpour
+ * @version 1.0 2020
+ */
 
-import gui.CFrame;
 import utils.FileUtils;
 
 import javax.swing.*;
@@ -23,8 +29,11 @@ public class LoginForm {
     private JPasswordField psswdField;
     private static final String INFO_PATH = ".\\user pass\\";
 
-    public LoginForm(String title) {
-        loginForm = new JFrame(title);
+    /**
+     * Creates new login form and sets its properties
+     */
+    public LoginForm() {
+        loginForm = new JFrame("log");
         loginForm.setLocationRelativeTo(null);
         loginForm.setLocation(700, 300);
         loginForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -79,16 +88,28 @@ public class LoginForm {
         panel.add(loginButton, BorderLayout.SOUTH);
     }
 
+    /**
+     * Makes login form visible and shows it.
+     */
     public void showGUI() {
         loginForm.pack();
         loginForm.setVisible(true);
     }
 
+    /**
+     * @return all usernames and passwords files
+     */
     public File[] peopleFile()
     {
         File people[] = FileUtils.getFilesInDirectory(INFO_PATH);
         return people;
     }
+
+    /**
+     * Checks if the entered username is correct or not
+     * @param user as entered username
+     * @return true if this username is available in user pass file or false if it is not.
+     */
     public boolean findPeople(String user)
     {
         File people[] = peopleFile();
@@ -101,6 +122,14 @@ public class LoginForm {
         }
         return false;
     }
+
+    /**
+     * After checking username this method checks if the entered password is correct for this username.
+     * @param user as entered username
+     * @param pass as entered password
+     * @return true if password ic correct and false if it is not.
+     * @throws FileNotFoundException checks if wanted file is available to scan it
+     */
     public boolean checkPass(String user, String pass) throws FileNotFoundException {
         File people[] = peopleFile();
         int person = 0;
@@ -126,6 +155,13 @@ public class LoginForm {
         }
         return false;
     }
+
+    /**
+     * Find the position of the person who wants to login in.
+     * @param user as  entered username
+     * @return position of person
+     * @throws FileNotFoundException checks if wanted file is available to scan it
+     */
     public String findPosition(String user) throws FileNotFoundException
     {
         File people[] = peopleFile();
@@ -152,8 +188,16 @@ public class LoginForm {
         }
         return pos;
     }
-    private class ButtonHandler implements ActionListener, FocusListener  {
 
+    /**
+     * This class use previous methods to check everything and if it was ok logs in to the panel.
+     */
+    private class ButtonHandler implements ActionListener, FocusListener  {
+        /**
+         * After clicking this method will be run.
+         * A semantic event which indicates that a component-defined action occurred.
+         * @param e as clicked object
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
 
@@ -190,18 +234,31 @@ public class LoginForm {
             }
         }
 
+        /**
+         * Displays a message when we focus.
+         * @param e
+         */
         @Override
         public void focusGained(FocusEvent e) {
             displayMessage("Focus gained", e);
 
         }
 
+        /**
+         * Displays a message when we finish focusing
+         * @param e
+         */
         @Override
         public void focusLost(FocusEvent e) {
             displayMessage("Focus lost", e);
 
         }
 
+        /**
+         * Displays message
+         * @param prefix
+         * @param e
+         */
         void displayMessage(String prefix, FocusEvent e) {
             System.out.println(prefix
                     + (e.isTemporary() ? " (temporary):" : ":")
