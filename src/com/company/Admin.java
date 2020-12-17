@@ -207,6 +207,9 @@ public class Admin extends Person{
         saveMeals(tuesdayF1, tuesdayP1, tuesdayF2, tuesdayP2, tuesday);
         saveMeals(wednesdayF1, wednesdayP1, wednesdayF2, wednesdayP2, wednesday);
         saveMeals(thursdayF1, thursdayP1, thursdayF2, thursdayP2, thursday);
+        Icon icon = new ImageIcon(".\\food2.png");
+        JLabel pic = new JLabel(icon);
+        panel.add(pic, BorderLayout.EAST);
         return panel;
     }
 
@@ -228,6 +231,13 @@ public class Admin extends Person{
         fieldsPanel.add(pass);
         fieldsPanel.add(passF);
 
+        Icon icon;
+        if(name.equals("student"))
+            icon = new ImageIcon(".\\student3.png");
+        else
+            icon = new ImageIcon(".\\teacher3.png");
+        JLabel pic = new JLabel(icon);
+        panel.add(pic, BorderLayout.EAST);
         panel.add(frame.getMainPanel().setLabel(" Add new "+name,Color.PINK), BorderLayout.NORTH);
         panel.add(fieldsPanel, BorderLayout.CENTER);
         panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
@@ -243,16 +253,21 @@ public class Admin extends Person{
 //        JList<File> dicList;
         File thisPeople[];
         String path;
+        Icon icon;
         if(name.contains("teacher"))
         {
+            icon = new ImageIcon(".\\teacher2.png");
             thisPeople = FileUtils.getFilesInDirectory(TEACHERS_PATH);
             path = TEACHERS_PATH;
         }
         else
         {
+            icon = new ImageIcon(".\\student2.png");
             thisPeople = FileUtils.getFilesInDirectory(STUDENTS_PATH);
             path = STUDENTS_PATH;
         }
+        JLabel pic = new JLabel(icon);
+        panel.add(pic, BorderLayout.EAST);
         dicList = new JList<>(thisPeople);
         dicList = new JList<>();
         dicList.setBackground(new Color(211, 211, 211));
@@ -514,9 +529,12 @@ public class Admin extends Person{
     {
         JPanel panel = new JPanel(new BorderLayout(1,2));
 //        JButton select = new JButton("Select");
-        panel.add(frame.getMainPanel().setLabel("Classes list", Color.white), BorderLayout.NORTH);
+        panel.add(frame.getMainPanel().setLabel("Classes list", Color.getHSBColor(800,800,1100)), BorderLayout.NORTH);
         panel.add(initDirectoryList(), BorderLayout.WEST);
         panel.add(tabbedPane, BorderLayout.CENTER);
+        Icon icon = new ImageIcon(".\\class.png");
+        JLabel pic = new JLabel(icon);
+        panel.add(pic, BorderLayout.EAST);
 
 //        panel.add(select, BorderLayout.SOUTH);
         return panel;
@@ -590,5 +608,10 @@ public class Admin extends Person{
                 }
             }
         });
+    }
+    @Override
+    public boolean checkNumber(String str)
+    {
+        return super.checkNumber(str);
     }
 }

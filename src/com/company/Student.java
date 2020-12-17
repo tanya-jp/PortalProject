@@ -100,10 +100,8 @@ public class Student extends Person{
             // Double-click detected
             if (eve.getClickCount() == 2) {
                 int index = directoryList.locationToIndex(eve.getPoint());
-//                System.out.println("Item " + index + " is clicked...");
                 File curr[] = FileUtils.getFilesInDirectory(CLASSES_PATH);
                 files = FileUtils.getFilesInDirectory(curr[index].toString());
-//                viewClasses(files);
                 int cnt = 0;
                 String content = "class\n";
                 while (cnt < files.length)
@@ -119,7 +117,6 @@ public class Student extends Person{
 
     public void openExistingNote(String content) {
         JPanel panel = new JPanel(new BorderLayout(5,5));
-//        JButton select = new JButton("Select");
         JTextArea existPanel = createTextPanel();
         existPanel.setText(content);
         panel.add(existPanel, BorderLayout.CENTER);
@@ -195,22 +192,11 @@ public class Student extends Person{
         File curr[] = FileUtils.getFilesInDirectory(MEALS_PATH);
         while(days < curr.length)
         {
-            String food1 = null;
-            String food2 = null;
-            int cnt = 0;
-            Scanner scanner = new Scanner(curr[days]);
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if(cnt == 1)
-                    food1 = line;
-                else if(cnt == 2)
-                    food1 += "     " + line;
-                else if(cnt == 3)
-                    food2 = line;
-                else if(cnt == 4)
-                    food2 += "     " + line;
-                cnt++;
-            }
+            String food1 = FileUtils.scanner(curr[days], 1);
+            food1 += "     " + FileUtils.scanner(curr[days], 2);
+            String food2 = FileUtils.scanner(curr[days], 3);
+            food2 += "     " + FileUtils.scanner(curr[days], 4);
+
             String m1[] = { food1, food2};
             if(curr[days].toString().contains("Saturday"))
             {
@@ -251,6 +237,8 @@ public class Student extends Person{
 
         JPanel labels = new JPanel(new BorderLayout(5, 5));
 
+        Icon icon = new ImageIcon(".\\food2.png");
+        JLabel pic = new JLabel(icon);
         daysPanel.add(saturday);
         daysPanel.add(sunday);
         daysPanel.add(monday);
@@ -260,17 +248,22 @@ public class Student extends Person{
         labels.add(frame.getMainPanel().setLabel(" Set weekly meal plan ",Color.getHSBColor(122,13,14)),
                 BorderLayout.CENTER);
         labels.add(frame.getMainPanel().setLabel("Budget: "+getBudget(username), Color.red),BorderLayout.EAST);
-        panel.add(labels, BorderLayout.NORTH);
+//        panel.add(labels, BorderLayout.NORTH);
         panel.add(daysPanel, BorderLayout.WEST);
         panel.add(mealsPanel, BorderLayout.CENTER);
-        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
+        JPanel finalPanel = new JPanel(new BorderLayout(5,4));
+        finalPanel.add(labels, BorderLayout.NORTH);
+        finalPanel.add(panel, BorderLayout.CENTER);
+        finalPanel.add(pic, BorderLayout.EAST);
+        finalPanel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
+//        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         saveMeals(saturday, saturdayBox);
         saveMeals(sunday, sundayBox);
         saveMeals(monday, mondayBox);
         saveMeals(tuesday, tuesdayBox);
         saveMeals(wednesday, wednesdayBox);
         saveMeals(thursday, thursdayBox);
-        return panel;
+        return finalPanel;
     }
 
     public JPanel budgetOptions(String type)
@@ -311,14 +304,21 @@ public class Student extends Person{
         panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         if(type.equals("increase"))
         {
+            Icon icon = new ImageIcon(".\\money1.jpg");
+            JLabel pic = new JLabel(icon);
+//            fieldsPanel.add(pic);
             panel.add(frame.getMainPanel().setLabel(" Increase budget ",
                     Color.green), BorderLayout.NORTH);
+            panel.add(pic, BorderLayout.EAST);
             charge(amountF, username);
         }
         else
         {
+            Icon icon = new ImageIcon(".\\money2.jpg");
+            JLabel pic = new JLabel(icon);
             panel.add(frame.getMainPanel().setLabel(" Transfer budget ",
                     Color.GREEN), BorderLayout.NORTH);
+            panel.add(pic, BorderLayout.EAST);
             transfer(amountF, destinationF);
         }
         return panel;
@@ -379,10 +379,14 @@ public class Student extends Person{
 
         JScrollPane classF = new JScrollPane(classList);
 
+        Icon icon = new ImageIcon(".\\student.png");
+        JLabel pic = new JLabel(icon);
+
         info.add(infoPanel, BorderLayout.NORTH);
         info.add(classF, BorderLayout.CENTER);
-        panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(248, 56, 155)), BorderLayout.NORTH);
+        panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(300, 100, 300)), BorderLayout.NORTH);
         panel.add(info, BorderLayout.CENTER);
+        panel.add(pic, BorderLayout.WEST);
         return panel;
     }
 
@@ -393,97 +397,32 @@ public class Student extends Person{
     }
     public float getBudget(String user)
     {
-        float budget = 0;
         File budgetFile = new File(getPath("budget", user));
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(budgetFile);
-        } catch (FileNotFoundException fileNotFoundException) {
-            fileNotFoundException.printStackTrace();
-        }
-        int cnt = 0;
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if(cnt == 1)
-                budget = Float.parseFloat(line);
-            cnt++;
-        }
+        float budget = Float.parseFloat(FileUtils.scanner(budgetFile, 1));
         return  budget;
     }
     public int getUnit()
     {
-        int unit = 0;
-        File budgetFile = new File(getPath("unit", username));
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(budgetFile);
-        } catch (FileNotFoundException fileNotFoundException) {
-            fileNotFoundException.printStackTrace();
-        }
-        int cnt = 0;
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if(cnt == 1)
-                unit = Integer.parseInt(line);
-            cnt++;
-        }
+        File unitFile = new File(getPath("unit", username));
+        int unit = Integer.parseInt(FileUtils.scanner(unitFile, 1));
         return  unit;
     }
     public String getPass()
     {
-        String  pass = null;
         File file = new File(INFO_PATH+username+".txt");
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(file);
-        } catch (FileNotFoundException fileNotFoundException) {
-            fileNotFoundException.printStackTrace();
-        }
-        int cnt = 0;
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if(cnt == 2)
-                pass = line;
-            cnt++;
-        }
+        String pass = FileUtils.scanner(file, 2);
         return  pass;
     }
     public float getAverage()
     {
-        float average = 0;
         File averageFile = new File(getPath("average", username));
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(averageFile);
-        } catch (FileNotFoundException fileNotFoundException) {
-            fileNotFoundException.printStackTrace();
-        }
-        int cnt = 0;
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if(cnt == 1)
-                average = Float.parseFloat(line);
-            cnt++;
-        }
+        float average = Float.parseFloat(FileUtils.scanner(averageFile, 1));
         return  average;
     }
     public int getPassedUnit()
     {
-        int passed = 0;
         File passedFile = new File(getPath("passed unit", username));
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(passedFile);
-        } catch (FileNotFoundException fileNotFoundException) {
-            fileNotFoundException.printStackTrace();
-        }
-        int cnt = 0;
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if(cnt == 1)
-                passed = Integer.parseInt(line);
-            cnt++;
-        }
+        int passed = Integer.parseInt(FileUtils.scanner(passedFile, 1));
         return  passed;
     }
     public void charge( JTextField amount, String destination) {
@@ -576,19 +515,7 @@ public class Student extends Person{
                     if(files[cnt].toString().contains("unit"))
                     {
                         int unit = getUnit();
-                        Scanner scanner = null;
-                        try {
-                            scanner = new Scanner(files[cnt]);
-                        } catch (FileNotFoundException fileNotFoundException) {
-                            fileNotFoundException.printStackTrace();
-                        }
-                        int counter = 0;
-                        while (scanner.hasNextLine()) {
-                            String line = scanner.nextLine();
-                            if(counter == 1)
-                                unit += Integer.parseInt(line);
-                            counter++;
-                        }
+                        unit += Integer.parseInt(FileUtils.scanner(files[cnt], 1));
                         int flag = 0;
                         if(unit>20)
                         {
@@ -607,38 +534,9 @@ public class Student extends Person{
                         }
                     }
                     else if(files[cnt].toString().contains("teacher"))
-                    {
-                        Scanner scanner = null;
-                        try {
-                            scanner = new Scanner(files[cnt]);
-                        } catch (FileNotFoundException fileNotFoundException) {
-                            fileNotFoundException.printStackTrace();
-                        }
-                        int counter = 0;
-                        while (scanner.hasNextLine()) {
-                            String line = scanner.nextLine();
-                            if(counter == 1)
-                                teacher = line;
-                            counter++;
-                        }
-//                        String path = TEACHER_PATH+teacher+"\\"+
-                    }
+                        teacher = FileUtils.scanner(files[cnt], 1);
                     else if(files[cnt].toString().contains("name"))
-                    {
-                        Scanner scanner = null;
-                        try {
-                            scanner = new Scanner(files[cnt]);
-                        } catch (FileNotFoundException fileNotFoundException) {
-                            fileNotFoundException.printStackTrace();
-                        }
-                        int counter = 0;
-                        while (scanner.hasNextLine()) {
-                            String line = scanner.nextLine();
-                            if(counter == 1)
-                                title = line;
-                            counter++;
-                        }
-                    }
+                        title = FileUtils.scanner(files[cnt], 1);
                     cnt ++;
                 }
                 System.out.println(title);
@@ -676,24 +574,8 @@ public class Student extends Person{
                         counter++;
                     }
                     String capacityPath = CLASSES_PATH+title+"/capacity.txt";
-                    int capacity = 0;
                     File capacityFile = new File(capacityPath);
-                    Scanner scanner1 = null;
-                    try {
-                        scanner1 = new Scanner(capacityFile);
-                    } catch (FileNotFoundException fileNotFoundException) {
-                        fileNotFoundException.printStackTrace();
-                    }
-                    int c = 0;
-                    while (scanner1.hasNextLine()) {
-                        String line = scanner1.nextLine();
-                        if(c == 1)
-                        {
-
-                            capacity = Integer.parseInt(line);
-                        }
-                        c++;
-                    }
+                    int capacity = Integer.parseInt(FileUtils.scanner(capacityFile, 1));
                     if(capacity == 0)
                     {
                         flag++;

@@ -1,5 +1,6 @@
 package com.company;
 
+import com.sun.deploy.util.StringUtils;
 import gui.CFrame;
 
 import javax.swing.*;
@@ -11,10 +12,14 @@ public class Main {
 //        CFrame frame = new CFrame("iNote");
 //        frame.setVisible(true);
 //        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        Admin admin = new Admin();
-//        Student student = new Student();
-        LoginForm loginForm = new LoginForm();
-        loginForm.showGUI();
+        Admin admin = new Admin("admin");
+//        Student student = new Student("tanya");
+//        Teacher teacher = new Teacher("ostad");
+//        LoginForm loginForm = new LoginForm();
+//        loginForm.showGUI();
+//        String str1 = "1223";
+//        String str2 = "salam1";
+//        System.out.println(isNumeric(str1));
 //        String str = "salam    1";
 //        String[] arrOfStr = str.split(" ", 5);
 //        System.out.println(arrOfStr[0]);

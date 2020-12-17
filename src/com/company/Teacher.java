@@ -21,7 +21,6 @@ import javax.imageio.ImageIO;
 public class Teacher extends Person{
     private CFrame frame;
     private JMenuItem newClass;
-    private JMenuItem students;
     private JMenuItem setGrade;
     private JList<File> directoryList;
     private String username;
@@ -45,7 +44,6 @@ public class Teacher extends Person{
     {
 
         newClass = frame.addToMenu("New class");
-        students = frame.addToMenu("Students");
         setGrade = frame.addToMenu("Set Grades");
     }
 
@@ -55,12 +53,6 @@ public class Teacher extends Person{
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("New class",createClass());
-            }
-        });
-        students.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addSpecificTab("Students","STUDENTS:");
             }
         });
         setGrade.addActionListener(new ActionListener() {
@@ -245,6 +237,7 @@ public class Teacher extends Person{
         mainPanel.add(panel, BorderLayout.CENTER);
         return mainPanel;
     }
+
     public void saveGrade(JTextField name,JTextField course, JTextField grade, JButton ok)
     {
         ok.addMouseListener(new MouseAdapter() {
@@ -253,37 +246,49 @@ public class Teacher extends Person{
                 String gradeNote = grade.getText();
                 String nameNote = name.getText();
                 String courseNote = course.getText();
-                Float gradeNum = Float.parseFloat(gradeNote);
-                int courseUnit = 0;
-                File unitFile = new File(CLASSES_PATH + courseNote + "\\unit.txt");
-                courseUnit = Integer.parseInt(FileUtils.scanner(unitFile, 1));
-                int passedUnit = 0;
-                float average = 0;
-                float res = 0;
-                for(int i = 0; i<2 ; i++)
+                if(gradeNote.isEmpty())
+                    JOptionPane.showMessageDialog(frame, "Empty!", "Result", JOptionPane.ERROR_MESSAGE);
+                else if(checkNumber(gradeNote))
                 {
-                    String str;
-                    if(i == 0)
-                        str = "average";
-                    else
-                        str = "passed unit";
-                    String path = STUDENTS_PATH+nameNote+"/"+str+".txt";
-                    File averageFile = new File(path);
-                    if(i == 0)
-                        average = Float.parseFloat(FileUtils.scanner(averageFile,1));
-                    else
-                        passedUnit = Integer.parseInt(FileUtils.scanner(averageFile,1));
-                }
-                System.out.println(average);
-                System.out.println(passedUnit);
-                String path = STUDENTS_PATH + nameNote + "/";
-                average = (average*passedUnit + gradeNum*courseUnit)/(passedUnit+courseUnit);
-                passedUnit += courseUnit;
-                String avg = "average\n" + average;
-                FileUtils.fileWriter(avg, path);
+                    if(Float.parseFloat(gradeNote) > 21 || Float.parseFloat(gradeNote) > 21)
+                    JOptionPane.showMessageDialog(frame, "Invalid grade!", "Result", JOptionPane.ERROR_MESSAGE);
 
-                String pu = "passed unit\n" + passedUnit;
-                FileUtils.fileWriter(pu, path);
+                else
+                {
+                    Float gradeNum = Float.parseFloat(gradeNote);
+                    int courseUnit = 0;
+                    File unitFile = new File(CLASSES_PATH + courseNote + "\\unit.txt");
+                    courseUnit = Integer.parseInt(FileUtils.scanner(unitFile, 1));
+                    int passedUnit = 0;
+                    float average = 0;
+                    float res = 0;
+                    for(int i = 0; i<2 ; i++)
+                    {
+                        String str;
+                        if(i == 0)
+                            str = "average";
+                        else
+                            str = "passed unit";
+                        String path = STUDENTS_PATH+nameNote+"/"+str+".txt";
+                        File averageFile = new File(path);
+                        if(i == 0)
+                            average = Float.parseFloat(FileUtils.scanner(averageFile,1));
+                        else
+                            passedUnit = Integer.parseInt(FileUtils.scanner(averageFile,1));
+                    }
+                    System.out.println(average);
+                    System.out.println(passedUnit);
+                    String path = STUDENTS_PATH + nameNote + "/";
+                    average = (average*passedUnit + gradeNum*courseUnit)/(passedUnit+courseUnit);
+                    passedUnit += courseUnit;
+                    String avg = "average\n" + average;
+                    FileUtils.fileWriter(avg, path);
+
+                    String pu = "passed unit\n" + passedUnit;
+                    FileUtils.fileWriter(pu, path);
+                }
+                }
+
             }
         });
     }
@@ -306,6 +311,8 @@ public class Teacher extends Person{
         passF.setEnabled(false);
         infoPanel.add(nameF);
         infoPanel.add(passF);
+        Icon icon = new ImageIcon(".\\teacher.png");
+        JLabel pic = new JLabel(icon);
         info.add(titlePanel, BorderLayout.NORTH);
         info.add(infoPanel, BorderLayout.CENTER);
         panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(160, 50, 100)), BorderLayout.NORTH);
@@ -313,7 +320,7 @@ public class Teacher extends Person{
         tabbedPane = new JTabbedPane();
         tabbedPane.add(info,"Username and Password");
         panel.add(tabbedPane, BorderLayout.CENTER);
-//        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
+        panel.add(pic, BorderLayout.EAST);
         return panel;
     }
 
@@ -445,6 +452,11 @@ public class Teacher extends Person{
                 }
             }
         });
+    }
+    @Override
+    public boolean checkNumber(String str)
+    {
+        return super.checkNumber(str);
     }
 
 }
