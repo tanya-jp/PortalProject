@@ -1,8 +1,10 @@
 package com.company;
 
+import com.sun.javafx.scene.control.skin.ColorPalette;
 import gui.CFrame;
 import utils.FileUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -14,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Admin extends Person{
@@ -37,16 +40,15 @@ public class Admin extends Person{
 
     public Admin(String user)
     {
+        super(user);
+        this.frame = super.getFrame();
         this.username = user;
-        frame = new CFrame(user);
-        frame.getMainPanel().addPanel("PROFILE",profilePanel());
+        frame.setFrame("admin", profilePanel());
         addFrameMenu();
         addToTab();
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    private void addFrameMenu()
+    public void addFrameMenu()
     {
 
         meals = frame.addToMenu("Set Meals");
@@ -57,7 +59,7 @@ public class Admin extends Person{
         addTeacher = frame.addToMenu("Add Teacher");
     }
 
-    private void addToTab()
+    public void addToTab()
     {
         meals.addActionListener(new ActionListener() {
             @Override
@@ -394,10 +396,13 @@ public class Admin extends Person{
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         JPanel info = new JPanel(new BorderLayout(5, 5));
-        JPanel titlePanel = new JPanel(new GridLayout(1, 2, 5, 5));
-        JPanel infoPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+        JPanel proPic = new JPanel(new GridLayout(1, 5));
+        JPanel titlePanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        JPanel infoPanel = new JPanel(new GridLayout(2, 1, 5, 5));
         JLabel name = new JLabel(" Username: ");
         JLabel pass = new JLabel(" Password: ");
+        Icon icon = new ImageIcon(".\\admin.png");
+        JLabel pic = new JLabel(icon);
         titlePanel.add(name);
         titlePanel.add(pass);
         JTextField nameF = new JTextField();
@@ -406,9 +411,11 @@ public class Admin extends Person{
         passF.setEnabled(false);
         infoPanel.add(nameF);
         infoPanel.add(passF);
-        info.add(titlePanel, BorderLayout.NORTH);
+        proPic.add(pic);
+        info.add(titlePanel, BorderLayout.WEST);
         info.add(infoPanel, BorderLayout.CENTER);
-        panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(160, 50, 100)), BorderLayout.NORTH);
+        panel.add(proPic, BorderLayout.WEST);
+        panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(100,240,800)) , BorderLayout.NORTH);
         panel.add(info, BorderLayout.CENTER);
 //        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         return panel;

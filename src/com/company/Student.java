@@ -17,7 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class Student {
+public class Student extends Person{
     private CFrame frame;
     private JMenuItem increaseBudget;
     private JMenuItem meals;
@@ -37,16 +37,15 @@ public class Student {
 
     public Student(String user)
     {
+        super(user);
+        this.frame = super.getFrame();
         this.username = user;
-        frame = new CFrame(user);
-        frame.getMainPanel().addPanel("PROFILE",profilePanel());
+        frame.setFrame("student", profilePanel());
         addFrameMenu();
         addToTab();
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    private void addFrameMenu()
+    public void addFrameMenu()
     {
 
         meals = frame.addToMenu("Set Meals");
@@ -134,7 +133,7 @@ public class Student {
         textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         return textPanel;
     }
-    private void addToTab()
+    public void addToTab()
     {
         meals.addActionListener(new ActionListener() {
             @Override

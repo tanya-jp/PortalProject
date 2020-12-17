@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class FileUtils {
 
@@ -93,6 +94,25 @@ public class FileUtils {
             return content;
         }
         return System.currentTimeMillis() + "_new file.txt";
+    }
+
+    public static String scanner(File file, int lineNumber)
+    {
+        String result = "";
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(file);
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+        int counter = 0;
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if(counter == lineNumber)
+                result = line;
+            counter++;
+        }
+        return result;
     }
 
     public static boolean deleteDirectory(File directoryToBeDeleted) {

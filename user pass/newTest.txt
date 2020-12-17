@@ -1,3 +1,0 @@
-newTest
-student
-1

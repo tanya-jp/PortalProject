@@ -7,9 +7,12 @@ package gui;
 
 import com.company.LoginForm;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 public class CFrame extends JFrame implements ActionListener{
 
@@ -33,6 +36,23 @@ public class CFrame extends JFrame implements ActionListener{
         initMenuBar(); //create menuBar
 
         initMainPanel(); //create main panel
+    }
+
+    public void setIcon(String position)
+    {
+        try {
+            this.setIconImage(ImageIO.read(new File("./"+ position + ".png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setFrame(String position,JPanel profilePanel)
+    {
+        this.getMainPanel().addPanel("PROFILE",profilePanel);
+        this.setIcon(position);
+        this.setVisible(true);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     /**

@@ -9,6 +9,7 @@ package com.company;
 
 import utils.FileUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -19,6 +20,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class LoginForm {
@@ -93,6 +95,11 @@ public class LoginForm {
      */
     public void showGUI() {
         loginForm.pack();
+        try {
+            loginForm.setIconImage(ImageIO.read(new File("./login.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         loginForm.setVisible(true);
     }
 

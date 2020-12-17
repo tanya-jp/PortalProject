@@ -13,10 +13,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.imageio.ImageIO;
 
-public class Teacher {
+public class Teacher extends Person{
     private CFrame frame;
     private JMenuItem newClass;
     private JMenuItem students;
@@ -31,16 +33,15 @@ public class Teacher {
 
     public Teacher(String user)
     {
+        super(user);
+        this.frame = super.getFrame();
         this.username = user;
-        frame = new CFrame(user);
-        frame.getMainPanel().addPanel("PROFILE",profilePanel());
+        frame.setFrame("teacher", profilePanel());
         addFrameMenu();
         addToTab();
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    private void addFrameMenu()
+    public void addFrameMenu()
     {
 
         newClass = frame.addToMenu("New class");
@@ -48,7 +49,7 @@ public class Teacher {
         setGrade = frame.addToMenu("Set Grades");
     }
 
-    private void addToTab()
+    public void addToTab()
     {
         newClass.addActionListener(new ActionListener() {
             @Override
@@ -152,8 +153,8 @@ public class Teacher {
     {
         String path = TEACHER_PATH + username;
         File className[] = FileUtils.getFilesInDirectory(path);
+        System.out.println(className[1]);
         JPanel mainPanel = new JPanel(new BorderLayout(5,5));
-        JPanel panel = new JPanel(new GridLayout(className.length, 4));
         JPanel titlePanel = new JPanel(new GridLayout(1,4));
         JTextField label1 = new JTextField("name");
         label1.setBackground(Color.YELLOW);
@@ -172,13 +173,40 @@ public class Teacher {
         titlePanel.add(label3);
         titlePanel.add(label4);
 
+        Icon okIcon = new ImageIcon("./OK.PNG");
+        int num = 0;
         int cnt = 0;
         while (cnt < className.length)
         {
             String title = "";
             if(!className[cnt].toString().contains("pass.txt"))
             {
-                System.out.println(className[cnt].toString());
+                Scanner scanner = null;
+                try {
+                    scanner = new Scanner(className[cnt]);
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+                int counter = 0;
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    if(counter != 0)
+                    {
+                        num++;
+                    }
+                    counter++;
+                }
+            }
+            cnt++;
+        }
+//        System.out.println("num "+num);
+        JPanel panel = new JPanel(new GridLayout(num, 4));
+        cnt = 0;
+        while (cnt < className.length)
+        {
+            String title = "";
+            if(!className[cnt].toString().contains("pass.txt"))
+            {
                 Scanner scanner = null;
                 try {
                     scanner = new Scanner(className[cnt]);
@@ -200,7 +228,8 @@ public class Teacher {
                         titleF.setEditable(false);
                         names.setEditable(false);
                         JTextField grade = new JTextField();
-                        JButton ok = new JButton("OK");
+                        JButton ok = new JButton(okIcon);
+
                         panel.add(names);
                         panel.add(titleF);
                         panel.add(grade);
@@ -227,19 +256,7 @@ public class Teacher {
                 Float gradeNum = Float.parseFloat(gradeNote);
                 int courseUnit = 0;
                 File unitFile = new File(CLASSES_PATH + courseNote + "\\unit.txt");
-                Scanner scanner = null;
-                try {
-                    scanner = new Scanner(unitFile);
-                } catch (FileNotFoundException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
-                }
-                int cnt = 0;
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    if(cnt == 1)
-                        courseUnit = Integer.parseInt(line);
-                    cnt++;
-                }
+                courseUnit = Integer.parseInt(FileUtils.scanner(unitFile, 1));
                 int passedUnit = 0;
                 float average = 0;
                 float res = 0;
@@ -252,25 +269,13 @@ public class Teacher {
                         str = "passed unit";
                     String path = STUDENTS_PATH+nameNote+"/"+str+".txt";
                     File averageFile = new File(path);
-                    Scanner scanner1 = null;
-                    try {
-                        scanner1 = new Scanner(averageFile);
-                    } catch (FileNotFoundException fileNotFoundException) {
-                        fileNotFoundException.printStackTrace();
-                    }
-                    int c = 0;
-                    while (scanner1.hasNextLine()) {
-                        String line = scanner1.nextLine();
-                        if(c == 1)
-                        {
-                            if(i == 0)
-                                average = Float.parseFloat(line);
-                            else
-                                passedUnit = Integer.parseInt(line);
-                        }
-                        c++;
-                    }
+                    if(i == 0)
+                        average = Float.parseFloat(FileUtils.scanner(averageFile,1));
+                    else
+                        passedUnit = Integer.parseInt(FileUtils.scanner(averageFile,1));
                 }
+                System.out.println(average);
+                System.out.println(passedUnit);
                 String path = STUDENTS_PATH + nameNote + "/";
                 average = (average*passedUnit + gradeNum*courseUnit)/(passedUnit+courseUnit);
                 passedUnit += courseUnit;
@@ -279,7 +284,6 @@ public class Teacher {
 
                 String pu = "passed unit\n" + passedUnit;
                 FileUtils.fileWriter(pu, path);
-
             }
         });
     }
@@ -317,19 +321,8 @@ public class Teacher {
     {
         String  pass = null;
         File file = new File(INFO_PATH+username+".txt");
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(file);
-        } catch (FileNotFoundException fileNotFoundException) {
-            fileNotFoundException.printStackTrace();
-        }
-        int cnt = 0;
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if(cnt == 2)
-                pass = line;
-            cnt++;
-        }
+        pass = FileUtils.scanner(file, 2);
+        System.out.println(pass);
         return  pass;
     }
 
