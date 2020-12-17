@@ -13,8 +13,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 
@@ -166,7 +168,7 @@ public class CMainPanel extends JPanel {
      * @param curr as current password to check if it is correct
      * @param newPass as new wanted password to check if it's length is more than 8 and then change it.
      * @param panel as panel that tabs are shown to show warning in the case needed.
-     * @param user as usernamwe of the person who wants to change their password.
+     * @param user as username of the person who wants to change their password.
      */
     public void setNewPass(JTextField curr, JTextField newPass ,JPanel panel, String user)
     {
@@ -241,6 +243,73 @@ public class CMainPanel extends JPanel {
                 String name = null;
                 String pass = null;
                 checkUsername(newUsernameText, panel);
+                String content = "";
+                String p1 = "";
+                while (cnt < userPasses.length)
+                {
+                    if(userPasses[cnt].toString().contains("\\"+currText+".txt"))
+                    {
+                        p1 = userPasses[cnt].toString();
+//                        String content = "";
+                        Scanner scanner = null;
+                        try {
+                            scanner = new Scanner(userPasses[cnt]);
+                        } catch (FileNotFoundException fileNotFoundException) {
+                            fileNotFoundException.printStackTrace();
+                        }
+                        int counter = 0;
+                        while (scanner.hasNextLine()) {
+                            String line = scanner.nextLine();
+                            content += line + "\n";
+                            counter++;
+                        }
+                        FileOutputStream file = null;
+                        PrintWriter p = null;
+                        try {
+                            file = new FileOutputStream(userPasses[cnt]);
+                            file.flush();
+                            file.close();
+                            if(!userPasses[cnt].delete())
+                                System.out.println(")))))))))))");
+                        } catch (FileNotFoundException fileNotFoundException) {
+                            fileNotFoundException.printStackTrace();
+                        } catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
+                        finally {
+                            // releases all system resources from the streams
+                            try {
+                                file.close();
+                                userPasses[cnt].delete();
+                            } catch (IOException ioException) {
+                                ioException.printStackTrace();
+                                System.out.println("kir");
+                            }
+                        }
+                        if(!userPasses[cnt].delete())
+                            System.out.println(")))))))))))");
+//                        File newFile = new File(p+fileName+".txt");
+
+                    }
+                    cnt++;
+                }
+                Path origin = Paths.get(p1);
+//                        FileUtils.fileWriter(content, INFO_PATH);
+
+                try {
+                    Files.move(origin, origin.resolveSibling(INFO_PATH+newUsernameText+".txt"));
+
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+//                Path origin = Paths.get(INFO_PATH+currText+".txt");
+//                FileUtils.fileReader()
+//                try {
+//                    Files.move(origin, origin.resolveSibling(INFO_PATH+newUsernameText+".txt"));
+//
+//                } catch (IOException ioException) {
+//                    ioException.printStackTrace();
+//                }
 
             }
         });

@@ -2,10 +2,12 @@ package com.company;
 import gui.CFrame;
 import utils.FileUtils;
 
+import javax.accessibility.AccessibleContext;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.plaf.PanelUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +22,7 @@ public class Student {
     private JMenuItem increaseBudget;
     private JMenuItem meals;
     private JMenuItem classes;
+    private JMenuItem budgetTransfer;
     private JList<File> directoryList;
     private static final String MEALS_PATH = "./meals/";
     private static final String INFO_PATH = ".\\user pass\\";
@@ -49,6 +52,7 @@ public class Student {
         meals = frame.addToMenu("Set Meals");
         classes = frame.addToMenu("Classes");
         increaseBudget = frame.addToMenu("Increase budget");
+        budgetTransfer = frame.addToMenu("Budget transfer");
     }
 
     private JScrollPane initDirectoryList() {
@@ -145,7 +149,13 @@ public class Student {
         increaseBudget.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getMainPanel().addPanel("Increase budget",changeBudget());
+                frame.getMainPanel().addPanel("Increase budget",budgetOptions("increase"));
+            }
+        });
+        budgetTransfer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.getMainPanel().addPanel("Budget transfer",budgetOptions("transfer"));
             }
         });
 
@@ -250,7 +260,7 @@ public class Student {
         daysPanel.add(thursday);
         labels.add(frame.getMainPanel().setLabel(" Set weekly meal plan ",Color.getHSBColor(122,13,14)),
                 BorderLayout.CENTER);
-        labels.add(frame.getMainPanel().setLabel("Budget: "+getBudget(), Color.red),BorderLayout.EAST);
+        labels.add(frame.getMainPanel().setLabel("Budget: "+getBudget(username), Color.red),BorderLayout.EAST);
         panel.add(labels, BorderLayout.NORTH);
         panel.add(daysPanel, BorderLayout.WEST);
         panel.add(mealsPanel, BorderLayout.CENTER);
@@ -264,25 +274,23 @@ public class Student {
         return panel;
     }
 
-    public JPanel changeBudget()
+    public JPanel budgetOptions(String type)
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-//        JLabel username = new JLabel(" username: ");
+        JLabel destination = new JLabel(" destination: ");
         JLabel id = new JLabel(" ID: ");
         JLabel pass = new JLabel(" password: ");
         JLabel amount = new JLabel(" amount: ");
 
-//        JTextField usernameF = new JTextField();
+        JTextField destinationF = new JTextField();
         JTextField idF = new JTextField();
         JTextField amountF = new JTextField();
         JPasswordField passF = new JPasswordField();
 
-        JPanel labelPanel = new JPanel(new GridLayout(3, 1, 5, 5));
-        JPanel fieldsPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel labelPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+        JPanel fieldsPanel = new JPanel(new GridLayout(4, 1, 5, 5));
 
-//        labelPanel.add(username);
-//        fieldsPanel.add(usernameF);
 
         labelPanel.add(id);
         fieldsPanel.add(idF);
@@ -290,17 +298,33 @@ public class Student {
         labelPanel.add(pass);
         fieldsPanel.add(passF);
 
+        if(type.equals("transfer"))
+        {
+            labelPanel.add(destination);
+            fieldsPanel.add(destinationF);
+        }
+
         labelPanel.add(amount);
         fieldsPanel.add(amountF);
 
-        panel.add(frame.getMainPanel().setLabel(" Increase budget ",
-                Color.green), BorderLayout.NORTH);
         panel.add(fieldsPanel, BorderLayout.CENTER);
         panel.add(labelPanel, BorderLayout.WEST);
         panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
-        charge(amountF);
+        if(type.equals("increase"))
+        {
+            panel.add(frame.getMainPanel().setLabel(" Increase budget ",
+                    Color.green), BorderLayout.NORTH);
+            charge(amountF, username);
+        }
+        else
+        {
+            panel.add(frame.getMainPanel().setLabel(" Transfer budget ",
+                    Color.GREEN), BorderLayout.NORTH);
+            transfer(amountF, destinationF);
+        }
         return panel;
     }
+
 
     public JPanel profilePanel()
     {
@@ -318,7 +342,7 @@ public class Student {
         JTextField passF = new JTextField(getPass());
         passF.setBackground(Color.DARK_GRAY);
         passF.setBorder(border);
-        JTextField budgetF = new JTextField(String.valueOf(getBudget()));
+        JTextField budgetF = new JTextField(String.valueOf(getBudget(username)));
         budgetF.setBackground(Color.DARK_GRAY);
         budgetF.setBorder(border);
         JTextField averageF = new JTextField(String.valueOf(getAverage()));
@@ -363,15 +387,15 @@ public class Student {
         return panel;
     }
 
-    public String getPath(String str)
+    public String getPath(String str, String user)
     {
-        String path = STUDENTS_PATH+username+"/"+str+".txt";
+        String path = STUDENTS_PATH+user+"/"+str+".txt";
         return path;
     }
-    public float getBudget()
+    public float getBudget(String user)
     {
         float budget = 0;
-        File budgetFile = new File(getPath("budget"));
+        File budgetFile = new File(getPath("budget", user));
         Scanner scanner = null;
         try {
             scanner = new Scanner(budgetFile);
@@ -390,7 +414,7 @@ public class Student {
     public int getUnit()
     {
         int unit = 0;
-        File budgetFile = new File(getPath("unit"));
+        File budgetFile = new File(getPath("unit", username));
         Scanner scanner = null;
         try {
             scanner = new Scanner(budgetFile);
@@ -428,7 +452,7 @@ public class Student {
     public float getAverage()
     {
         float average = 0;
-        File averageFile = new File(getPath("average"));
+        File averageFile = new File(getPath("average", username));
         Scanner scanner = null;
         try {
             scanner = new Scanner(averageFile);
@@ -447,7 +471,7 @@ public class Student {
     public int getPassedUnit()
     {
         int passed = 0;
-        File passedFile = new File(getPath("passed unit"));
+        File passedFile = new File(getPath("passed unit", username));
         Scanner scanner = null;
         try {
             scanner = new Scanner(passedFile);
@@ -463,26 +487,65 @@ public class Student {
         }
         return  passed;
     }
-    public void charge( JTextField amount)
+    public void charge( JTextField amount, String destination) {
+            frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+//                    System.out.println(amount+ destination);
+                    change(amount.getText(), destination);
+                }
+            });
+    }
+
+    public void change(String amount, String destination) {
+        float budget;
+
+        budget = getBudget(destination);
+        System.out.println(budget);
+        budget += Float.parseFloat(amount);
+        String note = "budget\n" + budget;
+        System.out.println(getPath("budget", destination));
+//                System.out.println(note);
+        if (!amount.isEmpty()) {
+            boolean isSuccessful = new File(getPath("budget", destination)).mkdirs();
+            System.out.println("Creating " + getPath("budget", destination) + " directory is successful: " + isSuccessful);
+            FileUtils.fileWriter(note, STUDENTS_PATH + destination + "/");
+            System.out.println(note);
+        }
+    }
+
+
+    public void transfer(JTextField amount, JTextField destination)
     {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String amountNote = amount.getText();
-                float budget = getBudget();
-                budget += Integer.parseInt(amountNote);
-                money = budget;
-                String note = "budget\n" + budget;
-                System.out.println(getPath("budget"));
-//                System.out.println(note);
-                if (!amountNote.isEmpty()){
-                    boolean isSuccessful = new File(getPath("budget")).mkdirs();
-                    System.out.println("Creating " + getPath("budget") + " directory is successful: " + isSuccessful);
-                    FileUtils.fileWriter(note, STUDENTS_PATH+username+"/");
-                    System.out.println(note);
+//
+                LoginForm l = new LoginForm();
+                if(!l.findPeople(destination.getText()))
+                    JOptionPane.showMessageDialog(frame, "Incorrect username!", "Result", JOptionPane.ERROR_MESSAGE);
+                else {
+                    try {
+                        if(!l.findPosition(destination.getText()).equals("student"))
+                            JOptionPane.showMessageDialog(frame, "This person is not a student!", "Result", JOptionPane.ERROR_MESSAGE);
+                        else if (getBudget(username) < Float.parseFloat(amount.getText()))
+                            JOptionPane.showMessageDialog(frame, "Not enough!", "Result", JOptionPane.ERROR_MESSAGE);
+                        else
+                        {
+                            float decrease  = Float.parseFloat(amount.getText()) * (-1);
+                            System.out.println(decrease);
+        //                    JTextField amountField = new JTextField(Float.toString(decrease));
+                            change(Float.toString(decrease), username);
+                            change(amount.getText(), destination.getText());
+
+                        }
+                    } catch (FileNotFoundException fileNotFoundException) {
+                        fileNotFoundException.printStackTrace();
+                    }
                 }
             }
         });
+
     }
 
     public JPanel viewClasses()
@@ -673,10 +736,10 @@ public class Student {
                     FileUtils.makeFolder(path);
                     String mealNote = meals.getSelectedItem().toString();
                     String[] arrOfStr = mealNote.split("     ", 5);
-                    if (getBudget() < Float.parseFloat(arrOfStr[1])/2 ) {
+                    if (getBudget(username) < Float.parseFloat(arrOfStr[1])/2 ) {
                         JOptionPane.showMessageDialog(frame, "not enough!", "Result", JOptionPane.ERROR_MESSAGE);
                     }
-                    else if(getBudget() < Float.parseFloat(arrOfStr[1]) && getAverage()<17) {
+                    else if(getBudget(username) < Float.parseFloat(arrOfStr[1]) && getAverage()<17) {
                         JOptionPane.showMessageDialog(frame, "not enough!", "Result", JOptionPane.ERROR_MESSAGE);
                     }
                     else {
@@ -689,9 +752,9 @@ public class Student {
                         else
                             price = Float.parseFloat(arrOfStr[1]);
                         System.out.println(price);
-                        String budgetNote = "budget\n" + (getBudget() - price);
-                        boolean isSuccessful = new File(getPath("budget")).mkdirs();
-                        System.out.println("Creating " + getPath("budget") + " directory is successful: " + isSuccessful);
+                        String budgetNote = "budget\n" + (getBudget(username) - price);
+                        boolean isSuccessful = new File(getPath("budget", username)).mkdirs();
+                        System.out.println("Creating " + getPath("budget", username) + " directory is successful: " + isSuccessful);
                         FileUtils.fileWriter(budgetNote, STUDENTS_PATH + username + "/");
                     }
                 }
