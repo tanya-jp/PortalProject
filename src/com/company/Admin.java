@@ -17,7 +17,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Scanner;
 
 public class Admin extends Person{
     private CFrame frame;
@@ -48,6 +47,7 @@ public class Admin extends Person{
         addToTab();
     }
 
+    @Override
     public void addFrameMenu()
     {
 
@@ -59,6 +59,7 @@ public class Admin extends Person{
         addTeacher = frame.addToMenu("Add Teacher");
     }
 
+    @Override
     public void addToTab()
     {
         meals.addActionListener(new ActionListener() {
@@ -250,7 +251,6 @@ public class Admin extends Person{
         JTabbedPane tb = new JTabbedPane();
         panel.add((frame.getMainPanel().setLabel(name, Color.blue)), BorderLayout.NORTH);
         StringBuilder info = new StringBuilder();
-//        JList<File> dicList;
         File thisPeople[];
         String path;
         Icon icon;
@@ -268,15 +268,7 @@ public class Admin extends Person{
         }
         JLabel pic = new JLabel(icon);
         panel.add(pic, BorderLayout.EAST);
-        dicList = new JList<>(thisPeople);
-        dicList = new JList<>();
-        dicList.setBackground(new Color(211, 211, 211));
-        dicList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        dicList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        dicList.setVisibleRowCount(-1);
-        dicList.setMinimumSize(new Dimension(130, 100));
-        dicList.setMaximumSize(new Dimension(130, 100));
-        dicList.setFixedCellWidth(130);
+        dicList = CFrame.setDictionary(dicList, thisPeople);
         dicList.setCellRenderer(new MyCellRenderer());
         tabbedPane = new JTabbedPane();
         dicList.addMouseListener(new PeopleMouseAdapter(path, name));
@@ -286,10 +278,6 @@ public class Admin extends Person{
 
         panel.add(dicPanel, BorderLayout.WEST);
         panel.add(tabbedPane, BorderLayout.CENTER);
-//        if(name.contains("teacher"))
-//        {
-//            Teacher teacher = new Teacher()
-//        }
 
         return  panel;
     }
@@ -344,7 +332,7 @@ public class Admin extends Person{
                     cnt ++;
                 }
                 System.out.println(content);
-                openExistingNote(content, name);
+                tabbedPane = FileUtils.openExistingNote(content, name+" "+(tabbedPane.getTabCount()+ 1), tabbedPane);
             }
         }
     }
@@ -436,28 +424,6 @@ public class Admin extends Person{
         return panel;
     }
 
-    private JScrollPane initDirectoryList() {
-        File[] files = FileUtils.getFilesInDirectory(CLASSES_PATH);
-        System.out.println(files.length);
-        directoryList = new JList<>(files);
-        directoryList = new JList<>();
-
-        directoryList.setBackground(new Color(211, 211, 211));
-        directoryList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        directoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        directoryList.setVisibleRowCount(-1);
-        directoryList.setMinimumSize(new Dimension(130, 100));
-        directoryList.setMaximumSize(new Dimension(130, 100));
-        directoryList.setFixedCellWidth(130);
-        directoryList.setCellRenderer(new MyCellRenderer());
-        tabbedPane = new JTabbedPane();
-        directoryList.addMouseListener(new MyMouseAdapter());
-
-        directoryList.setListData(files);
-
-        JScrollPane panel = new JScrollPane(directoryList);
-        return panel;
-    }
     private class MyCellRenderer extends DefaultListCellRenderer {
 
         @Override
@@ -497,46 +463,27 @@ public class Admin extends Person{
                         content += FileUtils.fileReader(files[cnt]) + "\n";
                     cnt ++;
                 }
-                openExistingNote(content ,"class");
+                tabbedPane = FileUtils.openExistingNote(content ,"class "+(tabbedPane.getTabCount()+ 1), tabbedPane);
             }
         }
     }
 
-    public void show(String path)
-    {
-//        directoryList.setCellRenderer(MyCellRenderer());
-//        directoryList.addMouseListener(new MyMouseAdapter());
-
-    }
-
-    public void openExistingNote(String content, String title) {
-        JPanel panel = new JPanel(new BorderLayout(5,5));
-//        JButton select = new JButton("Select");
-        JTextArea existPanel = createTextPanel();
-        existPanel.setText(content);
-        panel.add(existPanel, BorderLayout.CENTER);
-//        panel.add(select, BorderLayout.SOUTH);
-        int tabIndex = tabbedPane.getTabCount() + 1;
-        tabbedPane.addTab(title+" " + (tabbedPane.getTabCount() + 1), panel);
-        tabbedPane.setSelectedIndex(tabIndex - 1);
-    }
-    private JTextArea createTextPanel() {
-        JTextArea textPanel = new JTextArea();
-        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        return textPanel;
-    }
     public JPanel viewClasses()
     {
         JPanel panel = new JPanel(new BorderLayout(1,2));
-//        JButton select = new JButton("Select");
         panel.add(frame.getMainPanel().setLabel("Classes list", Color.getHSBColor(800,800,1100)), BorderLayout.NORTH);
-        panel.add(initDirectoryList(), BorderLayout.WEST);
+
+        File[] files = FileUtils.getFilesInDirectory(CLASSES_PATH);
+        directoryList = CFrame.setDictionary(directoryList,files);
+        directoryList.setCellRenderer(new MyCellRenderer());
+        tabbedPane = new JTabbedPane();
+        directoryList.addMouseListener(new MyMouseAdapter());
+        directoryList.setListData(files);
+        panel.add(new JScrollPane(directoryList), BorderLayout.WEST);
         panel.add(tabbedPane, BorderLayout.CENTER);
         Icon icon = new ImageIcon(".\\class.png");
         JLabel pic = new JLabel(icon);
         panel.add(pic, BorderLayout.EAST);
-
-//        panel.add(select, BorderLayout.SOUTH);
         return panel;
     }
 

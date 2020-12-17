@@ -1,8 +1,12 @@
 package com.company;
 
 import gui.CFrame;
+import utils.FileUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
+import java.io.File;
 
 public abstract class Person {
 
@@ -38,4 +42,5 @@ public abstract class Person {
         }
         return true;
     }
+
 }

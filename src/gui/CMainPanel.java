@@ -132,18 +132,6 @@ public class CMainPanel extends JPanel {
     }
 
     /**
-     * Adds specific tab to tabbedPane.
-     * @param name as title of new tab.
-     * @param text as text that should be shown in the tab.
-     */
-    public void addSpecificTab(String name, String text)
-    {
-        JTextArea textPanel = createTextPanel();
-        textPanel.setText(text);
-        tabbedPane.addTab(name,textPanel);
-    }
-
-    /**
      * Adds panel to the tabbedPane.
      * @param name as title of new tab.
      * @param panel as new panel that should be added to the tabbedPane.
@@ -151,16 +139,6 @@ public class CMainPanel extends JPanel {
     public void addPanel(String name, JPanel panel)
     {
         tabbedPane.addTab(name, panel);
-    }
-
-    /**
-     * Creates new text area and sets its border.
-     * @return created text panel
-     */
-    private JTextArea createTextPanel() {
-        JTextArea textPanel = new JTextArea();
-        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        return textPanel;
     }
 
     /**
@@ -210,6 +188,7 @@ public class CMainPanel extends JPanel {
                                     position = line;
                                 counter++;
                             }
+                            scanner.close();
                         }
                         cnt++;
                     }
@@ -248,69 +227,17 @@ public class CMainPanel extends JPanel {
                 while (cnt < userPasses.length)
                 {
                     if(userPasses[cnt].toString().contains("\\"+currText+".txt"))
-                    {
                         p1 = userPasses[cnt].toString();
-//                        String content = "";
-                        Scanner scanner = null;
-                        try {
-                            scanner = new Scanner(userPasses[cnt]);
-                        } catch (FileNotFoundException fileNotFoundException) {
-                            fileNotFoundException.printStackTrace();
-                        }
-                        int counter = 0;
-                        while (scanner.hasNextLine()) {
-                            String line = scanner.nextLine();
-                            content += line + "\n";
-                            counter++;
-                        }
-                        FileOutputStream file = null;
-                        PrintWriter p = null;
-                        try {
-                            file = new FileOutputStream(userPasses[cnt]);
-                            file.flush();
-                            file.close();
-                            if(!userPasses[cnt].delete())
-                                System.out.println(")))))))))))");
-                        } catch (FileNotFoundException fileNotFoundException) {
-                            fileNotFoundException.printStackTrace();
-                        } catch (IOException ioException) {
-                            ioException.printStackTrace();
-                        }
-                        finally {
-                            // releases all system resources from the streams
-                            try {
-                                file.close();
-                                userPasses[cnt].delete();
-                            } catch (IOException ioException) {
-                                ioException.printStackTrace();
-                                System.out.println("kir");
-                            }
-                        }
-                        if(!userPasses[cnt].delete())
-                            System.out.println(")))))))))))");
-//                        File newFile = new File(p+fileName+".txt");
-
-                    }
                     cnt++;
                 }
                 Path origin = Paths.get(p1);
-//                        FileUtils.fileWriter(content, INFO_PATH);
-
                 try {
                     Files.move(origin, origin.resolveSibling(INFO_PATH+newUsernameText+".txt"));
+                    System.out.println("YAY");
 
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
-//                Path origin = Paths.get(INFO_PATH+currText+".txt");
-//                FileUtils.fileReader()
-//                try {
-//                    Files.move(origin, origin.resolveSibling(INFO_PATH+newUsernameText+".txt"));
-//
-//                } catch (IOException ioException) {
-//                    ioException.printStackTrace();
-//                }
-
             }
         });
     }

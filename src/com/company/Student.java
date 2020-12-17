@@ -2,12 +2,10 @@ package com.company;
 import gui.CFrame;
 import utils.FileUtils;
 
-import javax.accessibility.AccessibleContext;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileSystemView;
-import javax.swing.plaf.PanelUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,26 +52,6 @@ public class Student extends Person{
         budgetTransfer = frame.addToMenu("Budget transfer");
     }
 
-    private JScrollPane initDirectoryList() {
-        File[] files = FileUtils.getFilesInDirectory(CLASSES_PATH);
-        System.out.println(files.length);
-        directoryList = new JList<>(files);
-        directoryList = new JList<>();
-
-        directoryList.setBackground(new Color(211, 211, 211));
-        directoryList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        directoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        directoryList.setVisibleRowCount(-1);
-        directoryList.setMinimumSize(new Dimension(130, 100));
-        directoryList.setMaximumSize(new Dimension(130, 100));
-        directoryList.setFixedCellWidth(130);
-        directoryList.setCellRenderer(new MyCellRenderer());
-        directoryList.addMouseListener(new MyMouseAdapter());
-        directoryList.setListData(files);
-
-        JScrollPane panel = new JScrollPane(directoryList);
-        return panel;
-    }
     private class MyCellRenderer extends DefaultListCellRenderer {
 
         @Override
@@ -110,26 +88,12 @@ public class Student extends Person{
                         content += FileUtils.fileReader(files[cnt]) + "\n";
                     cnt ++;
                 }
-                openExistingNote(content);
+                tabbedPane = FileUtils.openNoteWithButton(content, "class "+(tabbedPane.getTabCount()+ 1)
+                        ,tabbedPane,select);
             }
         }
     }
 
-    public void openExistingNote(String content) {
-        JPanel panel = new JPanel(new BorderLayout(5,5));
-        JTextArea existPanel = createTextPanel();
-        existPanel.setText(content);
-        panel.add(existPanel, BorderLayout.CENTER);
-        panel.add(select, BorderLayout.SOUTH);
-        int tabIndex = tabbedPane.getTabCount() + 1;
-        tabbedPane.addTab("class " + (tabbedPane.getTabCount() + 1), panel);
-        tabbedPane.setSelectedIndex(tabIndex - 1);
-    }
-    private JTextArea createTextPanel() {
-        JTextArea textPanel = new JTextArea();
-        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        return textPanel;
-    }
     public void addToTab()
     {
         meals.addActionListener(new ActionListener() {
@@ -248,7 +212,6 @@ public class Student extends Person{
         labels.add(frame.getMainPanel().setLabel(" Set weekly meal plan ",Color.getHSBColor(122,13,14)),
                 BorderLayout.CENTER);
         labels.add(frame.getMainPanel().setLabel("Budget: "+getBudget(username), Color.red),BorderLayout.EAST);
-//        panel.add(labels, BorderLayout.NORTH);
         panel.add(daysPanel, BorderLayout.WEST);
         panel.add(mealsPanel, BorderLayout.CENTER);
         JPanel finalPanel = new JPanel(new BorderLayout(5,4));
@@ -256,7 +219,6 @@ public class Student extends Person{
         finalPanel.add(panel, BorderLayout.CENTER);
         finalPanel.add(pic, BorderLayout.EAST);
         finalPanel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
-//        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         saveMeals(saturday, saturdayBox);
         saveMeals(sunday, sundayBox);
         saveMeals(monday, mondayBox);
@@ -306,7 +268,6 @@ public class Student extends Person{
         {
             Icon icon = new ImageIcon(".\\money1.jpg");
             JLabel pic = new JLabel(icon);
-//            fieldsPanel.add(pic);
             panel.add(frame.getMainPanel().setLabel(" Increase budget ",
                     Color.green), BorderLayout.NORTH);
             panel.add(pic, BorderLayout.EAST);
@@ -429,7 +390,6 @@ public class Student extends Person{
             frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-//                    System.out.println(amount+ destination);
                     change(amount.getText(), destination);
                 }
             });
@@ -443,7 +403,6 @@ public class Student extends Person{
         budget += Float.parseFloat(amount);
         String note = "budget\n" + budget;
         System.out.println(getPath("budget", destination));
-//                System.out.println(note);
         if (!amount.isEmpty()) {
             boolean isSuccessful = new File(getPath("budget", destination)).mkdirs();
             System.out.println("Creating " + getPath("budget", destination) + " directory is successful: " + isSuccessful);
@@ -472,7 +431,6 @@ public class Student extends Person{
                         {
                             float decrease  = Float.parseFloat(amount.getText()) * (-1);
                             System.out.println(decrease);
-        //                    JTextField amountField = new JTextField(Float.toString(decrease));
                             change(Float.toString(decrease), username);
                             change(amount.getText(), destination.getText());
 
@@ -489,12 +447,15 @@ public class Student extends Person{
     public JPanel viewClasses()
     {
         JPanel panel = new JPanel(new BorderLayout(1,2));
-//        JButton select = new JButton("Select");
+//        tabbedPane.add(select);
         panel.add(frame.getMainPanel().setLabel("Choose class", Color.white), BorderLayout.NORTH);
-        panel.add(initDirectoryList(), BorderLayout.WEST);
+        File[] files = FileUtils.getFilesInDirectory(CLASSES_PATH);
+        directoryList = CFrame.setDictionary(directoryList, files);
+        directoryList.setCellRenderer(new MyCellRenderer());
+        directoryList.addMouseListener(new MyMouseAdapter());
+        directoryList.setListData(files);
+        panel.add(new JScrollPane(directoryList), BorderLayout.WEST);
         panel.add(tabbedPane, BorderLayout.CENTER);
-
-//        panel.add(select, BorderLayout.SOUTH);
         saveClass();
         return panel;
     }
@@ -510,7 +471,6 @@ public class Student extends Person{
                 String title = null;
                 while (cnt < files.length)
                 {
-//                    content += FileUtils.fileReader(files[cnt]) + "\n";
                     System.out.println(files[cnt]);
                     if(files[cnt].toString().contains("unit"))
                     {
@@ -570,6 +530,7 @@ public class Student extends Person{
                                     flag++;
                                 }
                             }
+                            scanner.close();
                         }
                         counter++;
                     }
@@ -596,12 +557,10 @@ public class Student extends Person{
                         if(title != null)
                         {
                             String classPath = STUDENTS_PATH + username + "/classes/";
-//                            boolean isSuccessful = new File(STUDENTS_PATH + username + "\\classes").mkdirs();
                             FileUtils.fileWriter(title, classPath);
                         }
                     }
                 }
-//                System.out.println(content);
             }
 
         });
@@ -642,11 +601,4 @@ public class Student extends Person{
             }
         });
     }
-//    public void chooseClass()
-//    {
-//        JPanel classPanel = new JPanel(new GridLayout(6, 1, 5, 5));
-//        JCheckBox class1 = new JCheckBox(" class1: ");
-//        JCheckBox class2 = new JCheckBox(" class2: ");
-//
-//    }
 }

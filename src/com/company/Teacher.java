@@ -21,6 +21,7 @@ import javax.imageio.ImageIO;
 public class Teacher extends Person{
     private CFrame frame;
     private JMenuItem newClass;
+    private JMenuItem removeClass;
     private JMenuItem setGrade;
     private JList<File> directoryList;
     private String username;
@@ -29,6 +30,9 @@ public class Teacher extends Person{
     private static final String INFO_PATH = ".\\user pass\\";
     private static final String STUDENTS_PATH = "./students/";
     JTabbedPane tabbedPane ;
+    JButton select = new JButton("Select");
+    File[] files;
+    String content;
 
     public Teacher(String user)
     {
@@ -45,6 +49,7 @@ public class Teacher extends Person{
 
         newClass = frame.addToMenu("New class");
         setGrade = frame.addToMenu("Set Grades");
+        removeClass = frame.addToMenu("Remove class");
     }
 
     public void addToTab()
@@ -55,6 +60,12 @@ public class Teacher extends Person{
                 frame.getMainPanel().addPanel("New class",createClass());
             }
         });
+        removeClass.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            frame.getMainPanel().addPanel("Remove Class",removeClass());
+        }
+    });
         setGrade.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -63,34 +74,7 @@ public class Teacher extends Person{
         });
     }
 
-//    private void initTabbedPane() {
-//        tabbedPane = new JTabbedPane();
-//        add(tabbedPane, BorderLayout.CENTER);
-//    }
-
-    private JScrollPane initDirectoryList() {
-        File[] files = FileUtils.getFilesInDirectory(TEACHER_PATH + username + "\\");
-        System.out.println(files.length);
-        directoryList = new JList<>(files);
-        directoryList = new JList<>();
-
-        directoryList.setBackground(new Color(211, 211, 211));
-        directoryList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        directoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        directoryList.setVisibleRowCount(-1);
-        directoryList.setMinimumSize(new Dimension(130, 100));
-        directoryList.setMaximumSize(new Dimension(130, 100));
-        directoryList.setFixedCellWidth(130);
-        directoryList.setCellRenderer(new MyCellRenderer());
-        directoryList.addMouseListener(new MyMouseAdapter());
-        directoryList.setListData(files);
-
-        JScrollPane panel = new JScrollPane(directoryList);
-        return panel;
-    }
-
-
-    private class MyCellRenderer extends DefaultListCellRenderer {
+    public class MyCellRenderer extends DefaultListCellRenderer {
 
         @Override
         public Component getListCellRendererComponent(JList list, Object object, int index, boolean isSelected, boolean cellHasFocus) {
@@ -111,6 +95,11 @@ public class Teacher extends Person{
         }
     }
     private class MyMouseAdapter extends MouseAdapter {
+        String type;
+        private MyMouseAdapter(String t)
+        {
+            this.type = t;
+        }
         @Override
         public void mouseClicked(MouseEvent eve) {
             // Double-click detected
@@ -118,27 +107,14 @@ public class Teacher extends Person{
                 int index = directoryList.locationToIndex(eve.getPoint());
                 System.out.println("Item " + index + " is clicked...");
                 File curr[] = FileUtils.getFilesInDirectory(TEACHER_PATH + username + "\\");
-                String content = FileUtils.fileReader(curr[index]);
-//                String content = FileUtils.streamFileReader(curr[index]);
-//                File curr[] = FileUtils.getSerializedFilesInDirectory();
-//                String content = FileUtils.readObject(curr[index]);
-                openExistingNote(content, tabbedPane);
+                content = FileUtils.fileReader(curr[index]);
+                if(type.equals("add"))
+                    tabbedPane = FileUtils.openExistingNote(content, FileUtils.getProperFileName(content), tabbedPane);
+                else
+                    tabbedPane = FileUtils.openNoteWithButton(content, FileUtils.getProperFileName(content),
+                            tabbedPane, select);
             }
         }
-    }
-    public void openExistingNote(String content, JTabbedPane tabbedPane) {
-        JTextArea existPanel = createTextPanel();
-        existPanel.setText(content);
-
-//        int tabIndex = tabbedPane.getTabCount() + 1;
-        tabbedPane.addTab(FileUtils.getProperFileName(content) , existPanel);
-//        tabbedPane.setSelectedIndex(tabIndex - 1);
-    }
-
-    private JTextArea createTextPanel() {
-        JTextArea textPanel = new JTextArea();
-        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        return textPanel;
     }
 
     public JPanel setGrades()
@@ -188,6 +164,7 @@ public class Teacher extends Person{
                     }
                     counter++;
                 }
+                scanner.close();
             }
             cnt++;
         }
@@ -230,6 +207,7 @@ public class Teacher extends Person{
                     }
                     counter++;
                 }
+                scanner.close();
             }
             cnt++;
         }
@@ -316,7 +294,8 @@ public class Teacher extends Person{
         info.add(titlePanel, BorderLayout.NORTH);
         info.add(infoPanel, BorderLayout.CENTER);
         panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(160, 50, 100)), BorderLayout.NORTH);
-        panel.add(initDirectoryList(), BorderLayout.WEST);
+
+        panel.add(getClassList("add"), BorderLayout.WEST);
         tabbedPane = new JTabbedPane();
         tabbedPane.add(info,"Username and Password");
         panel.add(tabbedPane, BorderLayout.CENTER);
@@ -324,6 +303,61 @@ public class Teacher extends Person{
         return panel;
     }
 
+    public JScrollPane getClassList(String type)
+    {
+        files = FileUtils.getFilesInDirectory(TEACHER_PATH + username + "\\");
+        if(type.equals("remove"))
+        {
+            int cnt = 0;
+            while (cnt<files.length)
+            {
+                if(files[cnt].toString().contains("pass"))
+                    files[cnt].delete();
+                cnt++;
+            }
+            files = FileUtils.getFilesInDirectory(TEACHER_PATH + username + "\\");
+//            FileUtils.fileWriter("pass\n"+getPass(), TEACHER_PATH + username + "\\");
+        }
+        directoryList = new JList<>();
+        directoryList = CFrame.setDictionary(directoryList, files);
+        directoryList.setCellRenderer(new MyCellRenderer());
+        directoryList.addMouseListener(new MyMouseAdapter(type));
+        directoryList.setListData(files);
+        return (new JScrollPane(directoryList));
+    }
+
+    public JPanel removeClass()
+    {
+        tabbedPane = new JTabbedPane();
+        JPanel panel = new JPanel(new BorderLayout(1,2));
+        panel.add(frame.getMainPanel().setLabel("Remove class", Color.getHSBColor(178, 222, 251)), BorderLayout.NORTH);
+        JScrollPane scrollPane = new JScrollPane(getClassList("remove"));
+        panel.add(scrollPane, BorderLayout.WEST);
+        panel.add(tabbedPane, BorderLayout.CENTER);
+        Icon icon = new ImageIcon(".\\trash.png");
+        JLabel pic = new JLabel(icon);
+        panel.add(pic, BorderLayout.EAST);
+        setRemoveClass();
+        return panel;
+    }
+
+    public void setRemoveClass()
+    {
+        select.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int cnt = 0;
+                String className ;
+                while (cnt < files.length) {
+                    className = FileUtils.getProperFileName(content);
+                    System.out.println(className);
+                    if(files[cnt].toString().contains(className))
+                        files[cnt].delete();
+                    cnt++;
+                }
+            }
+        });
+    }
     public String getPass()
     {
         String  pass = null;
@@ -457,6 +491,10 @@ public class Teacher extends Person{
     public boolean checkNumber(String str)
     {
         return super.checkNumber(str);
+    }
+
+    public void notShowGUI() {
+        frame.setVisible(false);
     }
 
 }

@@ -1,5 +1,7 @@
 package utils;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.util.Scanner;
 
@@ -112,6 +114,7 @@ public class FileUtils {
                 result = line;
             counter++;
         }
+        scanner.close();
         return result;
     }
 
@@ -124,4 +127,34 @@ public class FileUtils {
         }
         return directoryToBeDeleted.delete();
     }
+
+    public static JTabbedPane openExistingNote(String content, String title, JTabbedPane tabbedPane) {
+        JPanel panel = new JPanel(new BorderLayout(5,5));
+        JTextArea existPanel = createTextPanel();
+        existPanel.setText(content);
+        panel.add(existPanel, BorderLayout.CENTER);
+        int tabIndex = tabbedPane.getTabCount() + 1;
+        tabbedPane.addTab(title, panel);
+        tabbedPane.setSelectedIndex(tabIndex - 1);
+        return tabbedPane;
+    }
+
+    public static JTabbedPane openNoteWithButton(String content, String title, JTabbedPane tabbedPane, JButton button) {
+        JPanel panel = new JPanel(new BorderLayout(5,5));
+        JTextArea existPanel = createTextPanel();
+        existPanel.setText(content);
+        panel.add(existPanel, BorderLayout.CENTER);
+        panel.add(button, BorderLayout.SOUTH);
+        int tabIndex = tabbedPane.getTabCount() + 1;
+        tabbedPane.addTab(title, panel);
+        tabbedPane.setSelectedIndex(tabIndex - 1);
+        return tabbedPane;
+    }
+
+    private static JTextArea createTextPanel() {
+        JTextArea textPanel = new JTextArea();
+        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        return textPanel;
+    }
+
 }

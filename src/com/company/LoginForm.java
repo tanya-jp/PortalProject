@@ -145,18 +145,9 @@ public class LoginForm {
         {
             if (people[person].toString().contains(INFO_PATH+user+".txt"))
             {
-                Scanner scanner = new Scanner(people[person]);
                 cnt = 0;
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    if(cnt == 2)
-                    {
-                        if(line.equals(pass))
-                            return true;
-                    }
-
-                    cnt++;
-                }
+                if(FileUtils.scanner(people[person],2).equals(pass))
+                    return true;
             }
             person++;
         }
@@ -179,17 +170,7 @@ public class LoginForm {
         {
             if (people[person].toString().contains(INFO_PATH+user+".txt"))
             {
-                Scanner scanner = new Scanner(people[person]);
-                cnt = 0;
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    if(cnt == 1)
-                    {
-                        pos = line;
-                    }
-
-                    cnt++;
-                }
+                pos = FileUtils.scanner(people[person],1);
             }
             person++;
         }

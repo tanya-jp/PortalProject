@@ -12,11 +12,11 @@ public class Main {
 //        CFrame frame = new CFrame("iNote");
 //        frame.setVisible(true);
 //        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        Admin admin = new Admin("admin");
+//        Admin admin = new Admin("admin");
 //        Student student = new Student("tanya");
 //        Teacher teacher = new Teacher("ostad");
-//        LoginForm loginForm = new LoginForm();
-//        loginForm.showGUI();
+        LoginForm loginForm = new LoginForm();
+        loginForm.showGUI();
 //        String str1 = "1223";
 //        String str2 = "salam1";
 //        System.out.println(isNumeric(str1));

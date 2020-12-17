@@ -6,12 +6,16 @@ package gui;
  */
 
 import com.company.LoginForm;
+import com.company.Teacher;
+import utils.FileUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class CFrame extends JFrame implements ActionListener{
@@ -133,6 +137,17 @@ public class CFrame extends JFrame implements ActionListener{
         if(!e.getActionCommand().equals(""))
         {
             if (e.getSource() == exitItem) {
+                LoginForm l = new LoginForm();
+                try {
+                    if(l.findPosition(getTitle()).equals("teacher"))
+                    {
+                        Teacher teacher = new Teacher(getTitle());
+                        teacher.notShowGUI();
+                        FileUtils.fileWriter("pass\n"+teacher.getPass(), ".\\teachers\\" + getTitle() + "\\");
+                    }
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
                 closeTab();
                 LoginForm loginForm = new LoginForm();
                 loginForm.showGUI();
@@ -150,6 +165,20 @@ public class CFrame extends JFrame implements ActionListener{
         else {
             System.out.println("Nothing detected...");
         }
+    }
+
+    public  static JList setDictionary(JList dicList, File[] files)
+    {
+        dicList = new JList<>(files);
+        dicList = new JList<>();
+        dicList.setBackground(new Color(211, 211, 211));
+        dicList.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        dicList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        dicList.setVisibleRowCount(-1);
+        dicList.setMinimumSize(new Dimension(130, 100));
+        dicList.setMaximumSize(new Dimension(130, 100));
+        dicList.setFixedCellWidth(130);
+        return dicList;
     }
 
 }

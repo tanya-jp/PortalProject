@@ -1,2 +1,2 @@
 capacity
-8
+10
