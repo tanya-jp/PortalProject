@@ -47,12 +47,16 @@ public abstract class Person {
      */
     public boolean checkNumber(String str)
     {
-        if(!(str.contains("0") || str.contains("1") || str.contains("2") ||
-                str.contains("3")|| str.contains("4") || str.contains("5") ||
-                str.contains("6")|| str.contains("7") || str.contains("8") || str.contains("9")))
+        int cnt = 0;
+        while (cnt<str.length())
         {
-            JOptionPane.showMessageDialog(frame, "Invalid!", "Result", JOptionPane.ERROR_MESSAGE);
-            return false;
+            if((str.charAt(cnt)==('0') || str.charAt(cnt)==('1') || str.charAt(cnt)==('2')
+                    || str.charAt(cnt)==('3') || str.charAt(cnt)==('4') || str.charAt(cnt)==('5')
+                    || str.charAt(cnt)==('6') || str.charAt(cnt)==('7') || str.charAt(cnt)==('8')
+                    || str.charAt(cnt)==('9')))
+                cnt++;
+            else
+                return false;
         }
         return true;
     }

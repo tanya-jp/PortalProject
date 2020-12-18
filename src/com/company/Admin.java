@@ -178,7 +178,7 @@ public class Admin extends Person{
         JTextField thursdayP2 = new JTextField();
 
         JPanel label = new JPanel(new GridLayout(2,1));
-        JPanel title = new JPanel(new GridLayout(1, 5, 5, 5));
+        JPanel title = new JPanel(new GridLayout(1, 6, 5, 5));
         JPanel daysPanel = new JPanel(new GridLayout(6, 1, 5, 5));
         JPanel mealsPanel = new JPanel(new GridLayout(6, 4, 5, 5));
         JLabel days = new JLabel("days");
@@ -186,12 +186,14 @@ public class Admin extends Person{
         JLabel price1 = new JLabel("price");
         JLabel food2 = new JLabel("food");
         JLabel price2 = new JLabel("price");
+        JLabel empty = new JLabel("   ");
 
         title.add(days);
         title.add(food1);
         title.add(price1);
         title.add(food2);
         title.add(price2);
+        title.add(empty);
         label.add(frame.getMainPanel().setLabel(" Set weekly meal plan ",Color.cyan));
         label.add(title);
 
@@ -297,30 +299,44 @@ public class Admin extends Person{
         File thisPeople[];
         String path;
         Icon icon;
+        int flag = 0;
         if(name.contains("teacher"))
         {
+            File file = new File(TEACHERS_PATH);
+            if (!file.exists()) {
+                JOptionPane.showMessageDialog(frame, "No teacher is added!", "Result", JOptionPane.ERROR_MESSAGE);
+                flag++;
+            }
             icon = new ImageIcon(".\\teacher2.png");
             thisPeople = FileUtils.getFilesInDirectory(TEACHERS_PATH);
             path = TEACHERS_PATH;
         }
         else
         {
+            File file = new File(STUDENTS_PATH);
+            if (!file.exists()) {
+                JOptionPane.showMessageDialog(frame, "No student is added!", "Result", JOptionPane.ERROR_MESSAGE);
+                flag++;
+            }
             icon = new ImageIcon(".\\student2.png");
             thisPeople = FileUtils.getFilesInDirectory(STUDENTS_PATH);
             path = STUDENTS_PATH;
         }
-        JLabel pic = new JLabel(icon);
-        panel.add(pic, BorderLayout.EAST);
-        dicList = CFrame.setDictionary(dicList, thisPeople);
-        dicList.setCellRenderer(new MyCellRenderer());
-        tabbedPane = new JTabbedPane();
-        dicList.addMouseListener(new PeopleMouseAdapter(path, name));
+        if(flag==0)
+        {
+            JLabel pic = new JLabel(icon);
+            panel.add(pic, BorderLayout.EAST);
+            dicList = CFrame.setDictionary(dicList, thisPeople);
+            dicList.setCellRenderer(new MyCellRenderer());
+            tabbedPane = new JTabbedPane();
+            dicList.addMouseListener(new PeopleMouseAdapter(path, name));
 
-        dicList.setListData(thisPeople);
-        JScrollPane dicPanel = new JScrollPane(dicList);
+            dicList.setListData(thisPeople);
+            JScrollPane dicPanel = new JScrollPane(dicList);
 
-        panel.add(dicPanel, BorderLayout.WEST);
-        panel.add(tabbedPane, BorderLayout.CENTER);
+            panel.add(dicPanel, BorderLayout.WEST);
+            panel.add(tabbedPane, BorderLayout.CENTER);
+        }
 
         return  panel;
     }
@@ -405,8 +421,10 @@ public class Admin extends Person{
         JLabel pic = new JLabel(icon);
         titlePanel.add(name);
         titlePanel.add(pass);
-        JTextField nameF = new JTextField();
-        JTextField passF = new JTextField();
+        JTextField nameF = new JTextField(username);
+        JTextField passF = new JTextField(FileUtils.scanner(new File(INFO_PATH+username+".txt"), 2));
+        passF.setBackground(Color.getHSBColor(90, 0, 0));
+        nameF.setBackground(Color.black);
         nameF.setEnabled(false);
         passF.setEnabled(false);
         infoPanel.add(nameF);
@@ -573,12 +591,16 @@ public class Admin extends Person{
                 String day = d.getText();
                 String note = day + "\n" + food1 + "\n" + price1 + "\n" + food2 + "\n" + price2 + "\n";
                 System.out.println(note);
-                if ((!food1.isEmpty() && !price1.isEmpty())||
+                if(!checkNumber(price1) || !checkNumber(price2))
+                    JOptionPane.showMessageDialog(frame, "Price should be number!", "Result", JOptionPane.ERROR_MESSAGE);
+
+                else if ((!food1.isEmpty() && !price1.isEmpty())||
                         (!food2.isEmpty() && !price2.isEmpty())) {
-                    boolean isSuccessful = new File(MEALS_PATH).mkdirs();
-                    System.out.println("Creating " + MEALS_PATH + " directory is successful: " + isSuccessful);
-                    FileUtils.fileWriter(note, MEALS_PATH);
-                    System.out.println(note);
+
+                        boolean isSuccessful = new File(MEALS_PATH).mkdirs();
+                        System.out.println("Creating " + MEALS_PATH + " directory is successful: " + isSuccessful);
+                        FileUtils.fileWriter(note, MEALS_PATH);
+                        System.out.println(note);
                 }
             }
         });

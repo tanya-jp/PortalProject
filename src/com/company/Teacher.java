@@ -587,44 +587,90 @@ public class Teacher extends Person{
                 String capacityNote = capacity.getText();
                 String daysNote = "days\n";
                 String timesNote = "times\n";
-                String thisClassPath = CLASSES_PATH+nameNote+"\\";
-                if(d1.isSelected())
+                String thisClassPath = CLASSES_PATH + nameNote + "\\";
+                int flag = 0;
+                if (d1.isSelected()) {
                     daysNote = daysNote + d1.getText() + "\n";
-                if(d2.isSelected())
-                    daysNote = daysNote + d2.getText() + "\n";
-                if(d3.isSelected())
-                    daysNote = daysNote + d3.getText() + "\n";
-                if(d4.isSelected())
-                    daysNote = daysNote + d4.getText() + "\n";
-                if(d5.isSelected())
-                    daysNote = daysNote + d5.getText() + "\n";
-
-                if(t1.isSelected())
-                    timesNote += t1.getText();
-                if(t2.isSelected())
-                    timesNote += t2.getText();
-                if(t3.isSelected())
-                    timesNote += t3.getText();
-
-                if (!nameNote.isEmpty() && !unitNote.isEmpty() && !capacityNote.isEmpty()){
-                    boolean isSuccessful1 = new File(CLASSES_PATH).mkdirs();
-                    boolean isSuccessful2 = new File(thisClassPath).mkdirs();
-                    String teacherFile = "teacher\n" + username;
-                    FileUtils.fileWriter(teacherFile, thisClassPath);
-                    String unitFile = "unit\n" + unitNote;
-                    FileUtils.fileWriter(unitFile, thisClassPath);
-                    String capacityFile = "capacity\n" + capacityNote;
-                    FileUtils.fileWriter(capacityFile, thisClassPath);
-                    String nameFile = "name\n" + nameNote;
-                    FileUtils.fileWriter(nameFile, thisClassPath);
-                    FileUtils.fileWriter(daysNote, thisClassPath);
-                    FileUtils.fileWriter(timesNote, thisClassPath);
+                    flag++;
                 }
-                if(!nameNote.isEmpty())
-                {
-                    String path = TEACHER_PATH + username + "\\";
-                    FileUtils.fileWriter(nameNote, path);
-                    System.out.println(nameNote);
+                if (d2.isSelected()) {
+                    daysNote = daysNote + d2.getText() + "\n";
+                    flag++;
+                }
+                if (d3.isSelected()) {
+                    daysNote = daysNote + d3.getText() + "\n";
+                    flag++;
+                }
+                if (d4.isSelected()) {
+                    daysNote = daysNote + d4.getText() + "\n";
+                    flag++;
+                }
+                if (d5.isSelected()) {
+                    daysNote = daysNote + d5.getText() + "\n";
+                    flag++;
+                }
+                if (flag == 0)
+                    JOptionPane.showMessageDialog(frame, "Choose a day!", "Result", JOptionPane.ERROR_MESSAGE);
+                else {
+                    flag = 0;
+                    if (t1.isSelected()) {
+                        timesNote += t1.getText();
+                        flag++;
+                    }
+                    if (t2.isSelected()) {
+                        timesNote += t2.getText();
+                        flag++;
+                    }
+                    if (t3.isSelected()) {
+                        timesNote += t3.getText();
+                        flag++;
+                    }
+
+                    if (flag == 0)
+                        JOptionPane.showMessageDialog(frame, "Choose a time!", "Result", JOptionPane.ERROR_MESSAGE);
+                    else {
+                        flag = 0;
+                        if (nameNote.isEmpty()) {
+                            JOptionPane.showMessageDialog(frame, "No course title!", "Result", JOptionPane.ERROR_MESSAGE);
+                            flag++;
+                        }
+                        if (unitNote.isEmpty()) {
+                            JOptionPane.showMessageDialog(frame, "No unit!", "Result", JOptionPane.ERROR_MESSAGE);
+                            flag++;
+                        }
+                        else if(!checkNumber(unitNote))
+                        {
+                            JOptionPane.showMessageDialog(frame, "Invalid unit!", "Result", JOptionPane.ERROR_MESSAGE);
+                            flag++;
+                        }
+                        if (capacityNote.isEmpty()) {
+                            JOptionPane.showMessageDialog(frame, "No capacity!", "Result", JOptionPane.ERROR_MESSAGE);
+                            flag++;
+                        }
+                        else if(!checkNumber(capacityNote))
+                        {
+                            JOptionPane.showMessageDialog(frame, "Invalid capacity!", "Result", JOptionPane.ERROR_MESSAGE);
+                            flag++;
+                        }
+
+                        if (flag == 0) {
+                            boolean isSuccessful1 = new File(CLASSES_PATH).mkdirs();
+                            boolean isSuccessful2 = new File(thisClassPath).mkdirs();
+                            String teacherFile = "teacher\n" + username;
+                            FileUtils.fileWriter(teacherFile, thisClassPath);
+                            String unitFile = "unit\n" + unitNote;
+                            FileUtils.fileWriter(unitFile, thisClassPath);
+                            String capacityFile = "capacity\n" + capacityNote;
+                            FileUtils.fileWriter(capacityFile, thisClassPath);
+                            String nameFile = "name\n" + nameNote;
+                            FileUtils.fileWriter(nameFile, thisClassPath);
+                            FileUtils.fileWriter(daysNote, thisClassPath);
+                            FileUtils.fileWriter(timesNote, thisClassPath);
+                            String path = TEACHER_PATH + username + "\\";
+                            FileUtils.fileWriter(nameNote, path);
+                            System.out.println(nameNote);
+                        }
+                    }
                 }
             }
         });

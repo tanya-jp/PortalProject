@@ -24,7 +24,6 @@ public class CMainPanel extends JPanel {
 
     private JTabbedPane tabbedPane;
     private JButton submit;
-    private JButton cancel;
     private static final String INFO_PATH = "./user pass/";
 
     /**
@@ -67,21 +66,16 @@ public class CMainPanel extends JPanel {
     }
 
     /**
-     * Sets submit and cancel butmn to tabs.
-     * @return buttonPanel which is a panel with submit and cancel buttons
+     * Sets submit to tabs.
+     * @return buttonPanel which is a panel with submit button
      */
     public JPanel setButtons()
     {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 5, 5));
         submit = new JButton("submit");
-        cancel = new JButton("cancel");
         int buttonWidth = submit.getPreferredSize().width;
         int buttonHeight = submit.getPreferredSize().height + 10;
         submit.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
-        int button2Width = cancel.getPreferredSize().width;
-        int button2Height = cancel.getPreferredSize().height + 10;
-        submit.setPreferredSize(new Dimension(button2Width, button2Height));
-        buttonPanel.add(cancel);
         buttonPanel.add(submit);
         return buttonPanel;
     }
