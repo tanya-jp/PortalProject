@@ -1,4 +1,9 @@
 package com.company;
+/**
+ * This class extends Person class and sets teacher's frame. Teacher can creates new class, remove a class, set grades.
+ * @author Tanya Djavaherpour
+ * @version 1.0 2020
+ */
 
 import gui.CFrame;
 import utils.FileUtils;
@@ -14,9 +19,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
-import javax.imageio.ImageIO;
 
 public class Teacher extends Person{
     private CFrame frame;
@@ -33,7 +36,10 @@ public class Teacher extends Person{
     JButton select = new JButton("Select");
     File[] files;
     String content;
-
+    /**
+     * Constructs new teacher
+     * @param user as username of teacher
+     */
     public Teacher(String user)
     {
         super(user);
@@ -43,7 +49,10 @@ public class Teacher extends Person{
         addFrameMenu();
         addToTab();
     }
-
+    /**
+     * Adds menu's items. Only teacher has these items.
+     */
+    @Override
     public void addFrameMenu()
     {
 
@@ -51,29 +60,46 @@ public class Teacher extends Person{
         setGrade = frame.addToMenu("Set Grades");
         removeClass = frame.addToMenu("Remove class");
     }
-
+    /**
+     * After clicking on menu items this method adds tabs to the frame.
+     */
+    @Override
     public void addToTab()
     {
         newClass.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on newClass
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("New class",createClass());
             }
         });
         removeClass.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on removeClass
+             * @param e as input of action
+             */
         @Override
         public void actionPerformed(ActionEvent e) {
             frame.getMainPanel().addPanel("Remove Class",removeClass());
         }
     });
         setGrade.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on setGrade
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Grade",setGrades());
             }
         });
     }
-
+    /**
+     * Specifies the item that has been chosen.
+     */
     public class MyCellRenderer extends DefaultListCellRenderer {
 
         @Override
@@ -94,12 +120,25 @@ public class Teacher extends Person{
             return this;
         }
     }
+
+    /**
+     *  This inner class extends MouseAdapter and is used when admin wants to remove or add classes.
+     */
     private class MyMouseAdapter extends MouseAdapter {
         String type;
+        /**
+         * Constructs new MyMouseAdapter
+         * @param t as type of the work, removing or adding
+         */
         private MyMouseAdapter(String t)
         {
             this.type = t;
         }
+
+        /**
+         * After clicking on class's name shows information.
+         * @param eve as input of mouse
+         */
         @Override
         public void mouseClicked(MouseEvent eve) {
             // Double-click detected
@@ -117,6 +156,10 @@ public class Teacher extends Person{
         }
     }
 
+    /**
+     * Creates proper panel to show this teacher's student and set their gardes
+     * @return created panel
+     */
     public JPanel setGrades()
     {
         String path = TEACHER_PATH + username;
@@ -168,7 +211,6 @@ public class Teacher extends Person{
             }
             cnt++;
         }
-//        System.out.println("num "+num);
         JPanel panel = new JPanel(new GridLayout(num, 4));
         cnt = 0;
         while (cnt < className.length)
@@ -216,9 +258,20 @@ public class Teacher extends Person{
         return mainPanel;
     }
 
+    /**
+     * Checks if teacher wants to save the grade, saves it.
+     * @param name as student's name
+     * @param course as course title
+     * @param grade as grade
+     * @param ok as OK button
+     */
     public void saveGrade(JTextField name,JTextField course, JTextField grade, JButton ok)
     {
         ok.addMouseListener(new MouseAdapter() {
+            /**
+             * After clicking if the field was not empty and the given number was proper, saves the grade
+             * @param e as input of mouse
+             */
             @Override
             public void mouseClicked(MouseEvent e) {
                 String gradeNote = grade.getText();
@@ -270,6 +323,11 @@ public class Teacher extends Person{
             }
         });
     }
+    /**
+     * Constructs profile panel
+     * @return proper profile panel to teacher
+     */
+    @Override
     public JPanel profilePanel()
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -303,6 +361,11 @@ public class Teacher extends Person{
         return panel;
     }
 
+    /**
+     * Shows all saved classes of this teacher
+     * @param type remove or add
+     * @return scroll pane of classes list
+     */
     public JScrollPane getClassList(String type)
     {
         files = FileUtils.getFilesInDirectory(TEACHER_PATH + username + "\\");
@@ -316,7 +379,6 @@ public class Teacher extends Person{
                 cnt++;
             }
             files = FileUtils.getFilesInDirectory(TEACHER_PATH + username + "\\");
-//            FileUtils.fileWriter("pass\n"+getPass(), TEACHER_PATH + username + "\\");
         }
         directoryList = new JList<>();
         directoryList = CFrame.setDictionary(directoryList, files);
@@ -326,6 +388,10 @@ public class Teacher extends Person{
         return (new JScrollPane(directoryList));
     }
 
+    /**
+     * Creates proper panel to remove a class
+     * @return removing panel
+     */
     public JPanel removeClass()
     {
         tabbedPane = new JTabbedPane();
@@ -341,23 +407,77 @@ public class Teacher extends Person{
         return panel;
     }
 
+    /**
+     * Removes a class after clicking
+     */
     public void setRemoveClass()
     {
         select.addMouseListener(new MouseAdapter() {
+            /**
+             * After clicking remove the chosen class from all files and folders which include it
+             * @param e as input of mouse
+             */
             @Override
             public void mouseClicked(MouseEvent e) {
                 int cnt = 0;
-                String className ;
-                while (cnt < files.length) {
+                String className = "" ;
+                int flag = 0;
+                while (cnt < files.length && flag == 0) {
                     className = FileUtils.getProperFileName(content);
                     System.out.println(className);
                     if(files[cnt].toString().contains(className))
+                    {
                         files[cnt].delete();
+                        flag++;
+                    }
+                    cnt++;
+                }
+                File index = new File(CLASSES_PATH+className);
+                String[] entries = index.list();
+                assert entries != null;
+                for(String s: entries){
+                    File currentFile = new File(index.getPath(),s);
+                    currentFile.delete();
+                }
+                File index2 = new File(CLASSES_PATH);
+                String[] filesEntries = index2.list();
+                assert filesEntries != null;
+                for(String s: filesEntries){
+                    if(s.contains(className))
+                    {
+                        System.out.println(s);
+                        File currentFile = new File(index2.getPath(),s);
+                        currentFile.delete();
+                    }
+                }
+                File[] students = FileUtils.getFilesInDirectory(STUDENTS_PATH);
+                cnt = 0;
+                while (cnt<students.length)
+                {
+                    String classPath = students[cnt].toString()+"/classes/";
+                    File i = new File(classPath);
+                    System.out.println(i);
+                    String[] classesEntries = i.list();
+                    assert classesEntries != null;
+                    for(String s: classesEntries){
+                        System.out.println(s);
+                        if(s.contains(className))
+                        {
+                            System.out.println(s);
+                            File currentFile = new File(i.getPath(),s);
+                            currentFile.delete();
+                        }
+                    }
                     cnt++;
                 }
             }
         });
     }
+
+    /**
+     * Gets this teacher's password
+     * @return password
+     */
     public String getPass()
     {
         String  pass = null;
@@ -367,6 +487,10 @@ public class Teacher extends Person{
         return  pass;
     }
 
+    /**
+     * Creates proper panel to save a new class
+     * @return created panel
+     */
     public JPanel createClass()
     {
         JPanel panel1 = new JPanel(new BorderLayout());
@@ -433,11 +557,29 @@ public class Teacher extends Person{
 
     }
 
+    /**
+     * Saves class after clicking
+     * @param name as course title
+     * @param unit as course unit
+     * @param capacity as capacity of this class
+     * @param d1 as saturday
+     * @param d2 as sunday
+     * @param d3 as monday
+     * @param d4 as tuesday
+     * @param d5 as wednesday
+     * @param t1 as 8-10
+     * @param t2 as 10-12
+     * @param t3 as 14-16
+     */
     public void setClass(JTextField name, JTextField unit, JTextField capacity,
                          JCheckBox d1, JCheckBox d2, JCheckBox d3, JCheckBox d4, JCheckBox d5,
                          JCheckBox t1, JCheckBox t2, JCheckBox t3)
     {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
+            /**
+             * After clicking submit button saves all information of created class
+             * @param e as input of mouse
+             */
             @Override
             public void mouseClicked(MouseEvent e) {
                 String nameNote = name.getText();
@@ -487,12 +629,20 @@ public class Teacher extends Person{
             }
         });
     }
+    /**
+     * Checks if all characters of string are number
+     * @param str is input string
+     * @return if they were number returns true, else returns false
+     */
     @Override
     public boolean checkNumber(String str)
     {
         return super.checkNumber(str);
     }
 
+    /**
+     * Makes frame of this person invisible
+     */
     public void notShowGUI() {
         frame.setVisible(false);
     }

@@ -15,8 +15,8 @@ public class Main {
 //        Admin admin = new Admin("admin");
 //        Student student = new Student("tanya");
 //        Teacher teacher = new Teacher("ostad");
-        LoginForm loginForm = new LoginForm();
-        loginForm.showGUI();
+//        LoginForm loginForm = new LoginForm();
+//        loginForm.showGUI();
 //        String str1 = "1223";
 //        String str2 = "salam1";
 //        System.out.println(isNumeric(str1));
@@ -25,15 +25,30 @@ public class Main {
 //        System.out.println(arrOfStr[0]);
 //        Teacher teacher = new Teacher();
 //        System.out.println("*****");
-//        String path = ".\\teachers\\";
-//        File index = new File(path);
-//        String[] entries = index.list();
-//        for(String s: entries){
-////            if(s.equals("2"))
-//            {
-//                File currentFile = new File(index.getPath(),s);
-//                currentFile.delete();
-//            }
+//        String CLASSES_PATH = ".\\classes\\";
+//        File index = new File(CLASSES_PATH);
+//                String[] entries = index.list();
+//                assert entries != null;
+//                for(String s: entries){
+//                    if(s.contains("1"))
+//                    {
+//                        File currentFile = new File(index.getPath(),s);
+//                        if(currentFile.delete())
+//                            System.out.println("***");
+//                    }
+//                }
+//        public boolean checkNumber(String str)
+//        {
+        String str = "s1ss";
+            if(!(str.contains("0") || str.contains("1") || str.contains("2") ||
+                    str.contains("3")|| str.contains("4") || str.contains("5") ||
+                    str.contains("6")|| str.contains("7") || str.contains("8") || str.contains("9")))
+            {
+                System.out.println("%%%");
+            }
+            else
+                System.out.println("_________");
+//            return true;
 //        }
     }
 }

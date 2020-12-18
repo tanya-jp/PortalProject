@@ -1,12 +1,15 @@
 package com.company;
+/**
+ * This class extends Person class and sets Admin's frame. Admin can save meals, adds student and teacher.
+ * He/She can also know about classes, students and teachers.
+ * @author Tanya Djavaherpour
+ * @version 1.0 2020
+ */
 
-import com.sun.javafx.scene.control.skin.ColorPalette;
 import gui.CFrame;
 import utils.FileUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
@@ -16,7 +19,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class Admin extends Person{
     private CFrame frame;
@@ -37,6 +39,10 @@ public class Admin extends Person{
     private JList<File> directoryList;
     private JList<File> dicList;
 
+    /**
+     * Constructs new admin
+     * @param user as username of admin
+     */
     public Admin(String user)
     {
         super(user);
@@ -47,6 +53,9 @@ public class Admin extends Person{
         addToTab();
     }
 
+    /**
+     * Adds menu's items. Only admin has these items.
+     */
     @Override
     public void addFrameMenu()
     {
@@ -59,48 +68,68 @@ public class Admin extends Person{
         addTeacher = frame.addToMenu("Add Teacher");
     }
 
+    /**
+     * After clicking on menu items this method adds tabs to the frame.
+     */
     @Override
     public void addToTab()
     {
         meals.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on meals
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Meals",setMeals());
             }
         });
         students.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on students
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
                     frame.getMainPanel().addPanel("Students",showPeople("student"));
-                } catch (FileNotFoundException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
-                }
+
             }
         });
         teachers.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on teachers
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
                     frame.getMainPanel().addPanel("Teachers",showPeople("teacher"));
-                } catch (FileNotFoundException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
-                }
             }
         });
         addTeacher.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on addTeacher
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Add Teacher",addPeople("teacher"));
             }
         });
         addStudent.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on addStudent
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Add Student",addPeople("student"));
             }
         });
         classes.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on classes
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Classes",viewClasses());
@@ -108,6 +137,10 @@ public class Admin extends Person{
         });
     }
 
+    /**
+     * This method creates proper JPanel to set meals.
+     * @return Panel of saving meals
+     */
     public JPanel setMeals()
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -214,6 +247,11 @@ public class Admin extends Person{
         return panel;
     }
 
+    /**
+     * This method creates proper JPanel to add people such as teachers and students.
+     * @param name as position of person, teacher or student.
+     * @return Panel of adding people.
+     */
     public JPanel addPeople(String name)
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -246,7 +284,12 @@ public class Admin extends Person{
         return panel;
     }
 
-    public JPanel showPeople(String name) throws FileNotFoundException {
+    /**
+     * Lists of people are shown with this panel.
+     * @param name as position of person, teacher or student.
+     * @return panel of showing people
+     */
+    public JPanel showPeople(String name) {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         JTabbedPane tb = new JTabbedPane();
         panel.add((frame.getMainPanel().setLabel(name, Color.blue)), BorderLayout.NORTH);
@@ -281,25 +324,32 @@ public class Admin extends Person{
 
         return  panel;
     }
+
+    /**
+     * This private inner class is used when user clicked on people's name
+     * and wants program to show their information.
+     * This class checks if user has clicked on items then do sequential tasks.
+     */
     private class PeopleMouseAdapter extends MouseAdapter {
         String p;
         String name;
-//        JTabbedPane tb;
         PeopleMouseAdapter(String path, String name)
         {
             this.p = path;
             this.name = name;
-//            this.tb = tb;
         }
+
+        /**
+         * After clicking adds new tab and shows the chosen person's information.
+         * @param eve as input action
+         */
         @Override
         public void mouseClicked(MouseEvent eve) {
             // Double-click detected
             if (eve.getClickCount() == 2) {
                 int index = dicList.locationToIndex(eve.getPoint());
-//                System.out.println("Item " + index + " is clicked...");
                 File curr[] = FileUtils.getFilesInDirectory(p);
                 File allFiles[] = FileUtils.getFilesInDirectory(curr[index].toString());
-////                viewClasses(files);
                 int cnt = 0;
                 String content = "";
                 while (cnt < allFiles.length)
@@ -337,64 +387,11 @@ public class Admin extends Person{
         }
     }
 
-    public JPanel classesList()
-    {
-        JPanel panel = new JPanel(new BorderLayout(5, 5));
-        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
-
-        JLabel name = new JLabel(" Name: ");
-        JLabel teacher = new JLabel(" Teacher: ");
-        JLabel student = new JLabel(" Students: ");
-        JLabel time = new JLabel(" Time: ");
-        JLabel units = new JLabel(" Units: ");
-        JLabel day = new JLabel(" Days: ");
-        JTextField nameF = new JTextField();
-        JTextField teacherF = new JTextField();
-        JTextField studentF = new JTextField();
-        JTextField timeF = new JTextField();
-        JTextField unitsF = new JTextField();
-        JTextField dayF = new JTextField();
-        nameF.setEnabled(false);
-        teacherF.setEnabled(false);
-        studentF.setEnabled(false);
-        unitsF.setEnabled(false);
-        timeF.setEnabled(false);
-        dayF.setEnabled(false);
-
-        JPanel titlePanel = new JPanel(new GridLayout(1, 6, 5, 5));
-        JPanel infoPanel = new JPanel(new GridLayout(1, 6, 5, 5));
-
-        titlePanel.add(name);
-        infoPanel.add(nameF);
-
-        titlePanel.add(teacher);
-        infoPanel.add(teacherF);
-
-        titlePanel.add(day);
-        infoPanel.add(dayF);
-
-        titlePanel.add(time);
-        infoPanel.add(timeF);
-
-        titlePanel.add(student);
-        infoPanel.add(studentF);
-
-        titlePanel.add(units);
-        infoPanel.add(unitsF);
-
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 1, 5, 5));
-        JButton ok = new JButton("OK");
-        int buttonWidth = ok.getPreferredSize().width;
-        int buttonHeight = ok.getPreferredSize().height + 10;
-        ok.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
-        buttonPanel.add(ok);
-
-        panel.add(titlePanel, BorderLayout.NORTH);
-        panel.add(infoPanel, BorderLayout.CENTER);
-        panel.add(buttonPanel, BorderLayout.AFTER_LAST_LINE);
-        return panel;
-    }
-
+    /**
+     * Constructs profile panel
+     * @return proper profile panel to admin
+     */
+    @Override
     public JPanel profilePanel()
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -420,12 +417,13 @@ public class Admin extends Person{
         panel.add(proPic, BorderLayout.WEST);
         panel.add(frame.getMainPanel().setLabel("Your profile",Color.getHSBColor(100,240,800)) , BorderLayout.NORTH);
         panel.add(info, BorderLayout.CENTER);
-//        panel.add(frame.getMainPanel().setButtons(), BorderLayout.SOUTH);
         return panel;
     }
 
+    /**
+     * Specifies the item that has been chosen.
+     */
     private class MyCellRenderer extends DefaultListCellRenderer {
-
         @Override
         public Component getListCellRendererComponent(JList list, Object object, int index, boolean isSelected, boolean cellHasFocus) {
             if (object instanceof File) {
@@ -444,17 +442,22 @@ public class Admin extends Person{
             return this;
         }
     }
-    private class MyMouseAdapter extends MouseAdapter {
 
+    /**
+     * This inner class extends MouseAdapter and is used when admin wants to visit a class.
+     */
+    private class ClassMouseAdapter extends MouseAdapter {
+        /**
+         * After clicking, this method shows class information.
+         * @param eve as mouse input
+         */
         @Override
         public void mouseClicked(MouseEvent eve) {
             // Double-click detected
             if (eve.getClickCount() == 2) {
                 int index = directoryList.locationToIndex(eve.getPoint());
-//                System.out.println("Item " + index + " is clicked...");
                 File curr[] = FileUtils.getFilesInDirectory(CLASSES_PATH);
                 files = FileUtils.getFilesInDirectory(curr[index].toString());
-//                viewClasses(files);
                 int cnt = 0;
                 String content = "class\n";
                 while (cnt < files.length)
@@ -468,6 +471,10 @@ public class Admin extends Person{
         }
     }
 
+    /**
+     * Creates proper panel to show list of classes.
+     * @return panel of showing classes
+     */
     public JPanel viewClasses()
     {
         JPanel panel = new JPanel(new BorderLayout(1,2));
@@ -477,7 +484,7 @@ public class Admin extends Person{
         directoryList = CFrame.setDictionary(directoryList,files);
         directoryList.setCellRenderer(new MyCellRenderer());
         tabbedPane = new JTabbedPane();
-        directoryList.addMouseListener(new MyMouseAdapter());
+        directoryList.addMouseListener(new ClassMouseAdapter());
         directoryList.setListData(files);
         panel.add(new JScrollPane(directoryList), BorderLayout.WEST);
         panel.add(tabbedPane, BorderLayout.CENTER);
@@ -487,8 +494,20 @@ public class Admin extends Person{
         return panel;
     }
 
+    /**
+     * When admin wants to add new person, this method after clicking saves information
+     * user name should not be available of user lists and password should have more than 8 characters
+     * @param user as text field of username of new person
+     * @param pass as text field of password of new person
+     * @param name as position of person, student or teacher
+     * @param panel as panel that is showing fields
+     */
     public void savePerson(JTextField user, JTextField pass, String name, JPanel panel) {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
+            /**
+             * After clicking, this method checks if username and pass is correct saves them.
+             * @param e as input of mouse
+             */
             @Override
             public void mouseClicked(MouseEvent e) {
                 String note_user = user.getText();
@@ -534,6 +553,14 @@ public class Admin extends Person{
         });
     }
 
+    /**
+     * Saves foods if their fields were not empty.
+     * @param f1 as name of first food
+     * @param p1 as price of first food
+     * @param f2 as name of second food
+     * @param p2 as price of second food
+     * @param d as label of day
+     */
     public void saveMeals(JTextField f1, JTextField p1, JTextField f2, JTextField p2, JLabel d)
     {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
@@ -556,6 +583,12 @@ public class Admin extends Person{
             }
         });
     }
+
+    /**
+     * Checks if all characters of string are number
+     * @param str is input string
+     * @return if they were number returns true, else returns false
+     */
     @Override
     public boolean checkNumber(String str)
     {

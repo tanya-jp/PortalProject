@@ -1,7 +1,11 @@
 package com.company;
 import gui.CFrame;
 import utils.FileUtils;
-
+/**
+ * This class extends person. Student can save meals, choose class increase their or other's budget.
+ * @author Tanya Djavaherpour
+ * @version 1.0 2020
+ */
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -33,6 +37,10 @@ public class Student extends Person{
     private File files[];
     JButton select = new JButton("Select");
 
+    /**
+     * Constructs new Student
+     * @param user as username of students
+     */
     public Student(String user)
     {
         super(user);
@@ -42,7 +50,10 @@ public class Student extends Person{
         addFrameMenu();
         addToTab();
     }
-
+    /**
+     * Adds menu's items. Only student has these items.
+     */
+    @Override
     public void addFrameMenu()
     {
 
@@ -51,7 +62,9 @@ public class Student extends Person{
         increaseBudget = frame.addToMenu("Increase budget");
         budgetTransfer = frame.addToMenu("Budget transfer");
     }
-
+    /**
+     * Specifies the item that has been chosen.
+     */
     private class MyCellRenderer extends DefaultListCellRenderer {
 
         @Override
@@ -72,7 +85,14 @@ public class Student extends Person{
             return this;
         }
     }
-    private class MyMouseAdapter extends MouseAdapter {
+    /**
+     * This inner class extends MouseAdapter and is used when student wants to choose a class.
+     */
+    private class ClassMouseAdapter extends MouseAdapter {
+        /**
+         * After clicking, this method shows class information.
+         * @param eve as mouse input
+         */
         @Override
         public void mouseClicked(MouseEvent eve) {
             // Double-click detected
@@ -94,25 +114,37 @@ public class Student extends Person{
         }
     }
 
+    /**
+     * After clicking on menu items this method adds tabs to the frame.
+     */
+    @Override
     public void addToTab()
     {
         meals.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on meals
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
                     frame.getMainPanel().addPanel("Meals",setMeals());
-                } catch (FileNotFoundException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
-                }
             }
         });
         increaseBudget.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on increaseBudget
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Increase budget",budgetOptions("increase"));
             }
         });
         budgetTransfer.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on budgetTransfer
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Budget transfer",budgetOptions("transfer"));
@@ -120,6 +152,10 @@ public class Student extends Person{
         });
 
         classes.addActionListener(new ActionListener() {
+            /**
+             * Checks if user has clicked on classes
+             * @param e as input of action
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getMainPanel().addPanel("Choose class",viewClasses());
@@ -128,7 +164,11 @@ public class Student extends Person{
 
     }
 
-    public JPanel setMeals() throws FileNotFoundException {
+    /**
+     * Creates proper panel to save meals
+     * @return panel of saving meals
+     */
+    public JPanel setMeals(){
         if(getAverage() >= 17)
         {
             JOptionPane.showMessageDialog(frame, "YOU CAN BUY 50% CHEAPER!", "notification", JOptionPane.INFORMATION_MESSAGE);
@@ -228,6 +268,11 @@ public class Student extends Person{
         return finalPanel;
     }
 
+    /**
+     * This method increases or transfers budget.
+     * @param type as type of the work that the method should do, increasing or transfering
+     * @return proper panel
+     */
     public JPanel budgetOptions(String type)
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -285,7 +330,11 @@ public class Student extends Person{
         return panel;
     }
 
-
+    /**
+     * Constructs profile panel
+     * @return proper profile panel to student
+     */
+    @Override
     public JPanel profilePanel()
     {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -351,35 +400,64 @@ public class Student extends Person{
         return panel;
     }
 
+    /**
+     * Gets path of the text file in the folder of student
+     * @param str as name of the file
+     * @param user as username of the student
+     * @return path of wanted file
+     */
     public String getPath(String str, String user)
     {
         String path = STUDENTS_PATH+user+"/"+str+".txt";
         return path;
     }
+
+    /**
+     * Gets budget of the student
+     * @param user as username of person whom budget is wanted
+     * @return budget of the username
+     */
     public float getBudget(String user)
     {
         File budgetFile = new File(getPath("budget", user));
         float budget = Float.parseFloat(FileUtils.scanner(budgetFile, 1));
         return  budget;
     }
+
+    /**
+     * Gets number of saved units of this student
+     * @return  number of saved units
+     */
     public int getUnit()
     {
         File unitFile = new File(getPath("unit", username));
         int unit = Integer.parseInt(FileUtils.scanner(unitFile, 1));
         return  unit;
     }
+    /**
+     * Gets password of this student
+     * @return password
+     */
     public String getPass()
     {
         File file = new File(INFO_PATH+username+".txt");
         String pass = FileUtils.scanner(file, 2);
         return  pass;
     }
+    /**
+     * Gets average of this student
+     * @return  average
+     */
     public float getAverage()
     {
         File averageFile = new File(getPath("average", username));
         float average = Float.parseFloat(FileUtils.scanner(averageFile, 1));
         return  average;
     }
+    /**
+     * Gets number of passed units of this student
+     * @return  number of passed units
+     */
     public int getPassedUnit()
     {
         File passedFile = new File(getPath("passed unit", username));
@@ -395,6 +473,12 @@ public class Student extends Person{
             });
     }
 
+    /**
+     * Changes the budget of one person. Increases when it is being charged
+     * and decreases when this student wants transfer money
+     * @param amount as amount of money
+     * @param destination as person whose budget should be changed
+     */
     public void change(String amount, String destination) {
         float budget;
 
@@ -411,13 +495,20 @@ public class Student extends Person{
         }
     }
 
-
+    /**
+     * Transfers money from this student to another and checks if wanted username is a student or not
+     * @param amount as amount of money
+     * @param destination as person whose budget should be changed
+     */
     public void transfer(JTextField amount, JTextField destination)
     {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
+            /**
+             * After clicking this method transfers money from this student to another and checks if wanted username is a student or not
+             * @param e as input of mouse
+             */
             @Override
             public void mouseClicked(MouseEvent e) {
-//
                 LoginForm l = new LoginForm();
                 if(!l.findPeople(destination.getText()))
                     JOptionPane.showMessageDialog(frame, "Incorrect username!", "Result", JOptionPane.ERROR_MESSAGE);
@@ -444,15 +535,18 @@ public class Student extends Person{
 
     }
 
+    /**
+     * Creates proper panel to show class information to student who wants to choose a class
+     * @return proper panel
+     */
     public JPanel viewClasses()
     {
         JPanel panel = new JPanel(new BorderLayout(1,2));
-//        tabbedPane.add(select);
         panel.add(frame.getMainPanel().setLabel("Choose class", Color.white), BorderLayout.NORTH);
         File[] files = FileUtils.getFilesInDirectory(CLASSES_PATH);
         directoryList = CFrame.setDictionary(directoryList, files);
         directoryList.setCellRenderer(new MyCellRenderer());
-        directoryList.addMouseListener(new MyMouseAdapter());
+        directoryList.addMouseListener(new ClassMouseAdapter());
         directoryList.setListData(files);
         panel.add(new JScrollPane(directoryList), BorderLayout.WEST);
         panel.add(tabbedPane, BorderLayout.CENTER);
@@ -460,9 +554,17 @@ public class Student extends Person{
         return panel;
     }
 
+    /**
+     * Saves the chosen class after clicking.
+     */
     public void saveClass()
     {
         select.addMouseListener(new MouseAdapter() {
+            /**
+             * After clicking checks if the units and average of this student were OK and he/she has not chosen this class before,
+             * saves this class for them.
+             * @param e as input of mouse
+             */
             @Override
             public void mouseClicked(MouseEvent e) {
                 int cnt = 0;
@@ -565,9 +667,20 @@ public class Student extends Person{
 
         });
     }
+
+    /**
+     * After clicking saves the chosen food
+     * @param day as of the chosen meal
+     * @param meals as available meals for the day
+     */
     public void saveMeals(JCheckBox day, JComboBox meals)
     {
         frame.getMainPanel().getSubmit().addMouseListener(new MouseAdapter() {
+            /**
+             * After clicking checks if this student has enough money saves the chosen mael.
+             * Top students can buy food 50% cheaper.
+             * @param e as input of mouse
+             */
             @Override
             public void mouseClicked(MouseEvent e) {
                 String dayNote = day.getText();
