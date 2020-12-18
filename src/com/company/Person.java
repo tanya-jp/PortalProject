@@ -1,12 +1,13 @@
 package com.company;
+/**
+ * This class creates a person.
+ * @author Tanya Djavaherpour
+ * @version 1.0 2020
+ */
 
 import gui.CFrame;
-import utils.FileUtils;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
-import java.io.File;
 
 public abstract class Person {
 
@@ -16,21 +17,34 @@ public abstract class Person {
     {
         this.username = user;
         frame = new CFrame(user);
-//        frame.setFrame(position, profilePanel());
-//        addFrameMenu();
-//        addToTab();
     }
-//
+
+    /**
+     * @return frame of information of this person
+     */
     public CFrame getFrame()
     {
         return frame;
     }
-    abstract void addFrameMenu();
-//
-    abstract void addToTab();
-//
-    abstract JPanel profilePanel();
 
+    /**
+     * Adds menu's items.
+     */
+    abstract void addFrameMenu();
+    /**
+     * After clicking on menu items this method adds tabs to the frame.
+     */
+    abstract void addToTab();
+    /**
+     * Constructs profile panel
+     * @return proper profile panel to person
+     */
+    abstract JPanel profilePanel();
+    /**
+     * Checks if all characters of string are number
+     * @param str is input string
+     * @return if they were number returns true, else returns false
+     */
     public boolean checkNumber(String str)
     {
         if(!(str.contains("0") || str.contains("1") || str.contains("2") ||

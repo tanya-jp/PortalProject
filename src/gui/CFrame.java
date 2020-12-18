@@ -42,6 +42,10 @@ public class CFrame extends JFrame implements ActionListener{
         initMainPanel(); //create main panel
     }
 
+    /**
+     * Sets icon to the frame
+     * @param position: admin, student or teacher
+     */
     public void setIcon(String position)
     {
         try {
@@ -51,6 +55,11 @@ public class CFrame extends JFrame implements ActionListener{
         }
     }
 
+    /**
+     * Sets related profile to the position as makes it visible
+     * @param position: admin, student or teacher
+     * @param profilePanel as profile panel that is created in Person class
+     */
     public void setFrame(String position,JPanel profilePanel)
     {
         this.getMainPanel().addPanel("PROFILE",profilePanel);
@@ -167,7 +176,13 @@ public class CFrame extends JFrame implements ActionListener{
         }
     }
 
-    public  static JList setDictionary(JList dicList, File[] files)
+    /**
+     * Makes a list of files
+     * @param dicList as JList that items should be added to
+     * @param files as files
+     * @return input JList with added items
+     */
+    public static JList setDictionary(JList dicList, File[] files)
     {
         dicList = new JList<>(files);
         dicList = new JList<>();

@@ -1,4 +1,10 @@
 package utils;
+/**
+ * This class does things related to files, such as reading a file, writing a file
+ * and other things that are clear in the methods.
+ * @author Tanya Djavaherpour
+ * @version 1.0 2020
+ */
 
 import javax.swing.*;
 import java.awt.*;
@@ -98,6 +104,12 @@ public class FileUtils {
         return System.currentTimeMillis() + "_new file.txt";
     }
 
+    /**
+     * Scans a file and reads it line by line and finds the wanted line
+     * @param file as file
+     * @param lineNumber as number of wanted line
+     * @return String of wanted line
+     */
     public static String scanner(File file, int lineNumber)
     {
         String result = "";
@@ -118,16 +130,13 @@ public class FileUtils {
         return result;
     }
 
-    public static boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        return directoryToBeDeleted.delete();
-    }
-
+    /**
+     * Open a note without any button
+     * @param content as content of the note
+     * @param title as title of new tab that should be added to the tabs
+     * @param tabbedPane as tabbed pane that shows notes
+     * @return tabbed panel with new added tab
+     */
     public static JTabbedPane openExistingNote(String content, String title, JTabbedPane tabbedPane) {
         JPanel panel = new JPanel(new BorderLayout(5,5));
         JTextArea existPanel = createTextPanel();
@@ -139,6 +148,14 @@ public class FileUtils {
         return tabbedPane;
     }
 
+    /**
+     * Open a note with button
+     * @param content as content of the note
+     * @param title as title of new tab that should be added to the tabs
+     * @param tabbedPane as tabbed pane that shows notes
+     * @param button as button of choosing the tab
+     * @return tabbed panel with new added tab
+     */
     public static JTabbedPane openNoteWithButton(String content, String title, JTabbedPane tabbedPane, JButton button) {
         JPanel panel = new JPanel(new BorderLayout(5,5));
         JTextArea existPanel = createTextPanel();
@@ -151,6 +168,10 @@ public class FileUtils {
         return tabbedPane;
     }
 
+    /**
+     * Creates a new text panel to show texts
+     * @return creates text area
+     */
     private static JTextArea createTextPanel() {
         JTextArea textPanel = new JTextArea();
         textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
